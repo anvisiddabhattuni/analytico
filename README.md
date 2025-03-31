@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # KTP-Analytico
 
 This repository contains the backend code for our group project, Analytico. 
@@ -15,3 +16,6 @@ This repository contains the backend code for our group project, Analytico.
    ```bash
    git clone https://github.com/ayush-java/KTP-Analytico.git
    cd KTP-Analytico
+=======
+# KTP-Analytico
+>>>>>>> 9b6641133460f896e9b3dec4de683a3aab648251
