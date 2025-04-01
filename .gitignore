@@ -20,6 +20,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.pyc
 
 # Virtual Environment
 venv/
@@ -36,4 +37,4 @@ ENV/
 .env.local
 
 # Logs
-*.log 
+*.log
