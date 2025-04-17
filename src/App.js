@@ -1,7 +1,12 @@
-export default function App() {
+import React from "react";
+import Dashboard from "./FreeIGDash";
+
+function App() {
   return (
-    <div className="text-3xl font-bold text-center mt-10 text-rose-500">
-      Tailwind is finally WORKING bff 💖
+    <div>
+      <Dashboard />
     </div>
   );
 }
+
+export default App;
