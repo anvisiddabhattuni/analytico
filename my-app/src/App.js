@@ -1,24 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import CreateAccountPage from "./pages/CreateAccountPage";
+import InstagramDashFree from "./pages/InstagramDashFree";
+import InstagramLogInPage from "./pages/InstagramLogInPage";
+import LoginAnalyticsPage from "./pages/LoginAnalyticsPage";
+import LogInPage from "./pages/LogInPage";
+import SignTikTokPage from "./pages/SignTikTokPage";
+import SignUpPage from "./pages/SignUpPage";
+import SignXPage from "./pages/SignXPage";
+import TikTokDashboardFree from "./pages/TikTokDashboardFree";
+import XDashboardFree from "./pages/XDashboardFree";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<SignUpPage />} />
+        <Route path="/create-account" element={<CreateAccountPage />} />
+        <Route path="/instagram-login" element={<InstagramLogInPage />} />
+        <Route path="/login-analytics" element={<LoginAnalyticsPage />} />
+        <Route path="/login" element={<LogInPage />} />
+        <Route path="/tiktok-login" element={<SignTikTokPage />} />
+        <Route path="/x-login" element={<SignXPage />} />
+        <Route path="/instagram-dash" element={<InstagramDashFree />} />
+        <Route path="/tiktok-dash" element={<TikTokDashboardFree />} />
+        <Route path="/x-dash" element={<XDashboardFree />} />
+      </Routes>
+    </Router>
   );
 }
 
