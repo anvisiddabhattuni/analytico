@@ -1,25 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function SignXPage() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/loading-x'); // ➔ Go to LoadingPageX
+  };
+
+  useEffect(() => {
+    // LoadingPageX will handle redirect to XDashboardFree after 2 sec
+  }, []);
+
   return (
     <div style={{
-        backgroundColor: '#0f172a',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
+      backgroundColor: '#0f172a',
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
       
       <div style={{
         backgroundColor: 'white',
         padding: '40px 30px 30px 30px',
         borderRadius: '10px',
         width: '600px',
-        height: '700px',   // <<< 🎯 New added line!
+        height: '700px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-    }}>
+      }}>
 
         {/* X Logo at the top */}
         <img 
@@ -120,18 +131,21 @@ function SignXPage() {
           }}
         />
 
-        {/* Next Button */}
-        <button style={{
-          width: '75%',
-          padding: '10px',
-          marginBottom: '10px',
-          backgroundColor: 'black',
-          color: 'white',
-          fontWeight: 'bold',
-          border: 'none',
-          borderRadius: '30px',
-          cursor: 'pointer'
-        }}>
+        {/* Login (Next) Button */}
+        <button
+          onClick={handleLoginClick}
+          style={{
+            width: '75%',
+            padding: '10px',
+            marginBottom: '10px',
+            backgroundColor: 'black',
+            color: 'white',
+            fontWeight: 'bold',
+            border: 'none',
+            borderRadius: '30px',
+            cursor: 'pointer'
+          }}
+        >
           Next
         </button>
 
@@ -157,6 +171,7 @@ function SignXPage() {
         }}>
           Don't have an account? <a href="/signup" style={{ color: '#1DA1F2', textDecoration: 'none' }}>Sign up</a>
         </div>
+
       </div>
     </div>
   );

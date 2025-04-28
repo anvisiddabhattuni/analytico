@@ -5,15 +5,15 @@ function LogInPage() {
   const navigate = useNavigate();
 
   const handleInstagramClick = () => {
-    navigate('/loading-instagram');
+    navigate('/instagram-login'); // ➔ Go to InstagramLogInPage
   };
 
   const handleXClick = () => {
-    navigate('/loading-x');
+    navigate('/x-login'); // ➔ Go to SignXPage
   };
 
   const handleTiktokClick = () => {
-    navigate('/loading-tiktok');
+    navigate('/tiktok-login'); // ➔ Go to SignTikTokPage
   };
 
   return (
@@ -26,6 +26,7 @@ function LogInPage() {
       alignItems: 'center'
     }}>
       
+      {/* Instagram Login Button */}
       <button 
         onClick={handleInstagramClick}
         style={{
@@ -41,6 +42,7 @@ function LogInPage() {
         Instagram Login
       </button>
 
+      {/* X Login Button */}
       <button 
         onClick={handleXClick}
         style={{
@@ -56,6 +58,7 @@ function LogInPage() {
         X Login
       </button>
 
+      {/* TikTok Login Button */}
       <button 
         onClick={handleTiktokClick}
         style={{
@@ -68,7 +71,7 @@ function LogInPage() {
           cursor: 'pointer'
         }}
       >
-        TikTok
+        TikTok Login
       </button>
 
     </div>

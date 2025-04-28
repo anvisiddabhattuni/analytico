@@ -1,6 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function InstagramLogInPage() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/loading-instagram'); // ➔ Go to LoadingPageInstagram
+  };
+
+  useEffect(() => {
+    // Auto-redirect from LoadingPageInstagram → InstagramDashFree already handled there
+  }, []);
+
   return (
     <div style={{
       backgroundColor: '#fafafa',
@@ -12,7 +23,12 @@ function InstagramLogInPage() {
     }}>
       
       {/* Left Side - Phone Image */}
-      <div style={{ marginRight: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div style={{
+        marginRight: '50px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
         <img 
           src="/InstagramPhone.png" 
           alt="Instagram Phone" 
@@ -71,17 +87,20 @@ function InstagramLogInPage() {
         />
 
         {/* Log In Button */}
-        <button style={{
-          width: '80%',
-          padding: '10px',
-          marginBottom: '10px',
-          backgroundColor: '#0095f6',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          fontWeight: 'bold',
-          cursor: 'pointer'
-        }}>
+        <button
+          onClick={handleLoginClick}
+          style={{
+            width: '80%',
+            padding: '10px',
+            marginBottom: '10px',
+            backgroundColor: '#0095f6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
           Log In
         </button>
 

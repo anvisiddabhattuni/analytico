@@ -1,6 +1,13 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function InstagramDashFree() {
+  const navigate = useNavigate();
+
+  const handleBackToLogin = () => {
+    navigate('/login'); // ➔ Go back to LogInPage
+  };
+
   return (
     <div className="min-h-screen bg-[#0e1c3f] text-white px-10 py-12 flex flex-col items-center gap-10">
       {/* Header */}
@@ -60,10 +67,14 @@ export default function InstagramDashFree() {
         ))}
       </div>
 
-      {/* Pro Feature */}
-      <div className="bg-[#f4a100] px-6 py-3 rounded-xl text-black font-semibold text-lg">
-        Pro Feature Insights
-      </div>
+      {/* Back to Login Button */}
+      <button
+        onClick={handleBackToLogin}
+        className="bg-[#f97316] text-black font-semibold px-6 py-3 rounded-xl text-lg hover:bg-orange-400 transition"
+      >
+        Back to Login
+      </button>
+
     </div>
   );
 }

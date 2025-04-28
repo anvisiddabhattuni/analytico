@@ -5,11 +5,11 @@ function SignUpPage() {
   const navigate = useNavigate();
 
   const handleRegisterClick = () => {
-    navigate('/create-account');
+    navigate('/create-account'); // ➔ Go to CreateAccountPage
   };
 
   const handleLoginClick = () => {
-    navigate('/login');
+    navigate('/login-analytics'); // ➔ Go to LoginAnalyticsPage
   };
 
   return (

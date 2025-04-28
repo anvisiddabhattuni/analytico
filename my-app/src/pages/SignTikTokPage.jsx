@@ -1,6 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function SignTikTokPage() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/loading-tiktok'); // ➔ Go to LoadingPageTikTok
+  };
+
+  useEffect(() => {
+    // LoadingPageTikTok handles redirect to TikTokDashboardFree after 2 seconds
+  }, []);
+
   return (
     <div style={{
       backgroundColor: '#ffffff',
@@ -62,21 +73,24 @@ function SignTikTokPage() {
         </p>
 
         {/* Phone or email button */}
-        <button style={{
-          width: '100%',
-          padding: '10px',
-          marginBottom: '10px',
-          backgroundColor: 'white',
-          color: 'black',
-          border: '1px solid #d1d5db',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 'bold',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
+        <button
+          onClick={handleLoginClick}
+          style={{
+            width: '100%',
+            padding: '10px',
+            marginBottom: '10px',
+            backgroundColor: 'white',
+            color: 'black',
+            border: '1px solid #d1d5db',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
           📱 Use phone or email
         </button>
 
@@ -179,6 +193,7 @@ function SignTikTokPage() {
         }}>
           Already have an account? <a href="/login" style={{ color: 'red', textDecoration: 'none' }}>Log in</a>
         </p>
+
       </div>
     </div>
   );
