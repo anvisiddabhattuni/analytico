@@ -5,15 +5,15 @@ function LogInPage() {
   const navigate = useNavigate();
 
   const handleInstagramClick = () => {
-    navigate('/instagram-login');
+    navigate('/loading-instagram');
   };
 
   const handleXClick = () => {
-    navigate('/x-login');
+    navigate('/loading-x');
   };
 
   const handleTiktokClick = () => {
-    navigate('/tiktok-login');
+    navigate('/loading-tiktok');
   };
 
   return (
