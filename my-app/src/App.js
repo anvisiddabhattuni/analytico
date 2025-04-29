@@ -14,6 +14,7 @@ import XDashboardFree from "./pages/XDashboardFree";
 import LoadingPageInstagram from "./pages/LoadingPageInstagram";
 import LoadingPageTikTok from "./pages/LoadingPageTikTok";
 import LoadingPageX from "./pages/LoadingPageX";
+import GrowthBotPage from './pages/GrowthBotPage'; // adjust path if needed
 
 function App() {
   return (
@@ -39,6 +40,9 @@ function App() {
         <Route path="/instagram-dash" element={<InstagramDashFree />} />
         <Route path="/tiktok-dash" element={<TikTokDashboardFree />} />
         <Route path="/x-dash" element={<XDashboardFree />} />
+        
+        {/* Growth Bot Page */}
+        <Route path="/growth-bot" element={<GrowthBotPage />} />
       </Routes>
     </Router>
   );
