@@ -48,13 +48,22 @@ export default function TikTokDashboardFree() {
         </ul>
       </div>
 
-      {/* Back to Login Button */}
-      <button
-        onClick={handleBackToLogin}
-        className="bg-[#f97316] text-black font-semibold px-6 py-3 rounded-xl text-lg hover:bg-orange-400 transition"
-      >
-        Back to Login
-      </button>
+      <div className="flex gap-4">
+  <button
+    onClick={handleBackToLogin}
+    className="bg-[#f97316] text-black font-semibold px-6 py-3 rounded-xl text-lg hover:bg-orange-400 transition"
+  >
+    Back to Login
+  </button>
+
+  <button
+    onClick={() => navigate('/growth-bot')}
+    className="bg-[#0ea5e9] text-white font-semibold px-6 py-3 rounded-xl text-lg hover:bg-blue-500 transition"
+  >
+    Ask Growth Bot
+  </button>
+</div>
+
 
     </div>
   );
