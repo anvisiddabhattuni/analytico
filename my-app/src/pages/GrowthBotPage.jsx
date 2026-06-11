@@ -1,44 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getRecommendations, isAuthenticated } from "../services/api";
 
 export default function GrowthBotPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const platform = location.state?.platform || "instagram";
+
   const [input, setInput] = useState("");
   const [response, setResponse] = useState(null);
   const [typing, setTyping] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    if (!isAuthenticated()) {
+      navigate("/login-analytics");
+      return;
+    }
+
     setTyping(true);
     setResponse(null);
+    setError("");
 
-    // Simulate call to OpenAI or actual API integration
-    setTimeout(async () => {
-      const mockReply = [
-        "✅ Post more Reels on Thursdays (highest CTR)",
-        "✅ Boost engagement by responding to top 3 fan comments per post",
-        "✅ Consider collaboration posts — accounts using this grew 12% faster",
-        "✅ Switch posting times from morning to early evening for 22% more reach"
-      ];
-
-      // In real usage, replace the mockReply with API call like:
-      // const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer YOUR_OPENAI_API_KEY`
-      //   },
-      //   body: JSON.stringify({
-      //     model: "gpt-3.5-turbo",
-      //     messages: [{ role: "user", content: input }]
-      //   })
-      // });
-      // const data = await res.json();
-      // setResponse([data.choices[0].message.content]);
-
+    try {
+      const data = await getRecommendations(platform, input.trim());
+      setResponse(data.recommendations || []);
+    } catch (err) {
+      if (err.status === 401) {
+        navigate("/login-analytics");
+      } else {
+        setError(err.message || "Could not get recommendations.");
+      }
+    } finally {
       setTyping(false);
-      setResponse(mockReply);
-    }, 1200);
+    }
   };
 
   return (
@@ -56,12 +54,18 @@ export default function GrowthBotPage() {
           </div>
         )}
 
+        {error && (
+          <div className="bg-red-100 text-red-800 p-4 rounded-2xl max-w-xl">
+            {error}
+          </div>
+        )}
+
         {response && (
           <div className="bg-gray-100 text-black p-4 rounded-2xl max-w-xl">
             <h3 className="font-bold mb-2">AI CHAT BOT</h3>
             <ul className="space-y-1">
               {response.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index}>✅ {item}</li>
               ))}
             </ul>
           </div>

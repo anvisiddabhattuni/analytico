@@ -1,21 +1,54 @@
-<<<<<<< HEAD
 # KTP-Analytico
 
-This repository contains the backend code for our group project, Analytico. 
+Analytico helps social media managers and creators understand their analytics and grow their accounts. React frontend + Flask API.
 
-## Getting Started
+## Quick Start (Local)
 
-### Prerequisites
-- Python 3.10 or later
-- Git
-- VS Code
+### Backend
 
-### Installation
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python run.py
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ayush-java/KTP-Analytico.git
-   cd KTP-Analytico
-=======
-# KTP-Analytico
->>>>>>> 9b6641133460f896e9b3dec4de683a3aab648251
+API: `http://localhost:5001`
+
+For local dev without MongoDB, set `USE_MEMORY_DB=true` in `.env`.
+
+### Frontend
+
+```bash
+cd my-app
+npm install
+cp .env.example .env
+npm start
+```
+
+App: `http://localhost:3000`
+
+## Deploy to Production
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for MongoDB Atlas + Render + Vercel setup.
+
+## API Contract
+
+See [API_CONTRACT.md](./API_CONTRACT.md).
+
+## Project Structure
+
+```
+app/              Flask API
+my-app/           React UI
+render.yaml       Render deployment blueprint
+DEPLOYMENT.md     Production setup guide
+```
+
+## Analytics Modes
+
+| Mode | Use case |
+|------|----------|
+| `ANALYTICS_MODE=mock` | Portfolio demo (default) |
+| `ANALYTICS_MODE=live` | Real Instagram Graph API when credentials are set |

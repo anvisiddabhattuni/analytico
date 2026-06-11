@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isAuthenticated } from '../services/api';
 
 function LogInPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate('/login-analytics');
+    }
+  }, [navigate]);
 
   const handleInstagramClick = () => {
     navigate('/instagram-login'); // ➔ Go to InstagramLogInPage
