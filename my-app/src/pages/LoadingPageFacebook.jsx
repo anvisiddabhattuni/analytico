@@ -2,18 +2,18 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingScreen from '../components/ui/LoadingScreen';
 
-const LoadingPageInstagram = () => {
+const LoadingPageFacebook = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/instagram-dash');
-    }, 2000); // 2 seconds
+      navigate('/facebook-dash');
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  return <LoadingScreen message="Connecting to Instagram..." />;
+  return <LoadingScreen message="Connecting to Facebook..." />;
 };
 
-export default LoadingPageInstagram;
+export default LoadingPageFacebook;

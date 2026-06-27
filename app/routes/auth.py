@@ -1,6 +1,11 @@
+import secrets
+from datetime import datetime, timezone
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token
+
 from app.models import User
+from app.utils.email import send_verification_email
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -12,17 +17,23 @@ def register():
     password = data.get("password") or ""
 
     if not username or not password:
-        return jsonify({"message": "Username and password are required"}), 400
+        return jsonify({"message": "Email and password are required"}), 400
 
     if User.find_by_username(username):
-        return jsonify({"message": "User already exists"}), 409
+        return jsonify({"message": "An account with this email already exists"}), 409
 
     try:
         User.create_user(username, password)
     except ValueError:
-        return jsonify({"message": "User already exists"}), 409
+        return jsonify({"message": "An account with this email already exists"}), 409
 
-    return jsonify({"message": "User registered successfully"}), 201
+    token = secrets.token_urlsafe(32)
+    User.set_verification_token(username, token)
+    send_verification_email(username, token)
+
+    return jsonify({
+        "message": "Account created. Check your email to verify your account."
+    }), 201
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -32,11 +43,53 @@ def login():
     password = data.get("password") or ""
 
     if not username or not password:
-        return jsonify({"message": "Username and password are required"}), 400
+        return jsonify({"message": "Email and password are required"}), 400
 
     user = User.find_by_username(username)
-    if user and User.verify_password(user["password"], password):
-        token = create_access_token(identity=username)
-        return jsonify({"access_token": token, "username": username}), 200
+    if not user or not User.verify_password(user["password"], password):
+        return jsonify({"message": "Invalid email or password"}), 401
 
-    return jsonify({"message": "Invalid credentials"}), 401
+    if not user.get("email_verified"):
+        return jsonify({
+            "message": "Please verify your email before logging in.",
+            "code": "email_not_verified",
+        }), 403
+
+    token = create_access_token(identity=username)
+    return jsonify({"access_token": token, "username": username}), 200
+
+
+@auth_bp.route("/verify/<token>", methods=["GET"])
+def verify_email(token):
+    user = User.find_by_verification_token(token)
+    if not user:
+        return jsonify({"message": "Invalid or expired verification link"}), 400
+
+    expires_str = user.get("verification_token_expires")
+    if expires_str:
+        expires = datetime.fromisoformat(expires_str)
+        if datetime.now(timezone.utc) > expires:
+            return jsonify({"message": "Verification link has expired. Please sign up again."}), 400
+
+    User.verify_email(user["username"])
+    return jsonify({"message": "Email verified successfully"}), 200
+
+
+@auth_bp.route("/resend-verification", methods=["POST"])
+def resend_verification():
+    data = request.get_json() or {}
+    username = (data.get("email") or "").strip()
+
+    user = User.find_by_username(username)
+    if not user:
+        # Don't reveal whether email exists
+        return jsonify({"message": "If that email is registered, a new link has been sent."}), 200
+
+    if user.get("email_verified"):
+        return jsonify({"message": "This email is already verified."}), 400
+
+    token = secrets.token_urlsafe(32)
+    User.set_verification_token(username, token)
+    send_verification_email(username, token)
+
+    return jsonify({"message": "If that email is registered, a new link has been sent."}), 200

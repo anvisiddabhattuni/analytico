@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../services/api";
+import { register, resendVerification } from "../services/api";
+import Background from "../components/ui/Background";
+import GlassCard from "../components/ui/GlassCard";
+import { PrimaryButton, GhostButton } from "../components/ui/Button";
+import { AnalyticoBadge, AnalyticoWordmark } from "../components/ui/AnalyticoBadge";
+import { Mail, CheckCircle } from "lucide-react";
 
 function CreateAccountPage() {
   const navigate = useNavigate();
@@ -8,8 +13,11 @@ function CreateAccountPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMsg, setResendMsg] = useState("");
 
-  const handleCreateAccountClick = async (e) => {
+  const handleCreateAccount = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -17,11 +25,15 @@ function CreateAccountPage() {
       setError("Email and password are required.");
       return;
     }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
 
     setLoading(true);
     try {
       await register(email.trim(), password);
-      navigate("/login-analytics");
+      setSent(true);
     } catch (err) {
       setError(err.message || "Could not create account.");
     } finally {
@@ -29,125 +41,109 @@ function CreateAccountPage() {
     }
   };
 
-  const handleLogInLinkClick = () => {
-    navigate("/login-analytics");
+  const handleResend = async () => {
+    setResendMsg("");
+    setResendLoading(true);
+    try {
+      await resendVerification(email.trim());
+      setResendMsg("Link resent — check your inbox.");
+    } catch {
+      setResendMsg("Could not resend. Try again shortly.");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
+  if (sent) {
+    return (
+      <Background className="flex min-h-screen flex-col items-center justify-center px-6 py-12">
+        <GlassCard className="w-full max-w-md p-8 sm:p-10">
+          <div className="flex flex-col items-center gap-5 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/20">
+              <Mail className="h-7 w-7 text-orange-400" />
+            </span>
+            <div>
+              <h2 className="font-display text-2xl font-bold">Check your email</h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/55">
+                We sent a verification link to{" "}
+                <span className="font-medium text-white/80">{email}</span>.
+                Click it to activate your account.
+              </p>
+            </div>
+
+            <div className="w-full rounded-2xl bg-white/5 px-5 py-4 text-left text-sm text-white/50 leading-relaxed">
+              Didn't get it? Check your spam folder, or{" "}
+              <button
+                onClick={handleResend}
+                disabled={resendLoading}
+                className="font-medium text-orange-400 transition hover:text-orange-300 disabled:opacity-50"
+              >
+                {resendLoading ? "Sending..." : "resend the link"}
+              </button>
+              .
+              {resendMsg && (
+                <p className="mt-2 flex items-center gap-1.5 text-emerald-400">
+                  <CheckCircle className="h-3.5 w-3.5" />
+                  {resendMsg}
+                </p>
+              )}
+            </div>
+
+            <GhostButton onClick={() => navigate("/login-analytics")} className="w-full">
+              Go to log in
+            </GhostButton>
+          </div>
+        </GlassCard>
+      </Background>
+    );
+  }
+
   return (
-    <div
-      style={{
-        backgroundColor: "#0f172a",
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "20px",
-      }}
-    >
-      <form
-        onSubmit={handleCreateAccountClick}
-        style={{
-          backgroundColor: "white",
-          padding: "50px 40px",
-          borderRadius: "20px",
-          width: "100%",
-          maxWidth: "400px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
-        }}
-      >
-        <h2
-          style={{
-            color: "black",
-            fontSize: "28px",
-            fontWeight: "bold",
-            marginBottom: "30px",
-          }}
-        >
-          Create Account
-        </h2>
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "15px",
-            borderRadius: "8px",
-            border: "1px solid lightgray",
-            backgroundColor: "#fafafa",
-            fontSize: "14px",
-          }}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "20px",
-            borderRadius: "8px",
-            border: "1px solid lightgray",
-            backgroundColor: "#fafafa",
-            fontSize: "14px",
-          }}
-        />
-
-        {error && (
-          <p style={{ color: "#dc2626", fontSize: "13px", marginBottom: "12px" }}>
-            {error}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "12px",
-            backgroundColor: "black",
-            color: "white",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: "8px",
-            cursor: loading ? "not-allowed" : "pointer",
-            marginBottom: "20px",
-            opacity: loading ? 0.7 : 1,
-          }}
-        >
-          {loading ? "Creating..." : "Create Account"}
-        </button>
-
-        <div
-          style={{
-            fontSize: "13px",
-            color: "black",
-            textAlign: "center",
-          }}
-        >
-          Already have an account?{" "}
-          <span
-            onClick={handleLogInLinkClick}
-            style={{
-              color: "#1e40af",
-              textDecoration: "none",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-          >
-            Log In
-          </span>
+    <Background className="flex min-h-screen items-center justify-center px-6 py-12">
+      <GlassCard className="w-full max-w-md p-8 sm:p-10">
+        <div className="mb-8 flex flex-col items-center gap-3 text-center">
+          <div className="flex items-center gap-2">
+            <AnalyticoBadge className="h-7 w-7" />
+            <AnalyticoWordmark className="text-2xl" />
+          </div>
+          <h2 className="font-display text-2xl font-semibold">Create your account</h2>
+          <p className="text-sm text-white/50">Start tracking your Meta analytics.</p>
         </div>
-      </form>
-    </div>
+
+        <form onSubmit={handleCreateAccount} className="flex flex-col gap-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="glass-input"
+          />
+          <input
+            type="password"
+            placeholder="Password (min. 8 characters)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="glass-input"
+          />
+
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
+          <PrimaryButton type="submit" disabled={loading} className="mt-2 w-full">
+            {loading ? "Creating account..." : "Create account"}
+          </PrimaryButton>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-white/50">
+          Already have an account?{" "}
+          <button
+            onClick={() => navigate("/login-analytics")}
+            className="font-semibold text-orange-400 transition hover:text-orange-300"
+          >
+            Log in
+          </button>
+        </p>
+      </GlassCard>
+    </Background>
   );
 }
 

@@ -10,14 +10,33 @@ services:
       - key: PYTHON_VERSION
         value: 3.12.7
       - key: USE_MEMORY_DB
-        value: false
+        value: true
       - key: ANALYTICS_MODE
-        value: mock
+        value: live
       - key: SECRET_KEY
         generateValue: true
       - key: JWT_SECRET_KEY
         generateValue: true
-      - key: MONGO_URI
-        sync: false
+      # Set these after you know your Vercel URL
       - key: CORS_ORIGINS
         sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # Meta OAuth — copy from your .env
+      - key: FACEBOOK_APP_ID
+        sync: false
+      - key: FACEBOOK_APP_SECRET
+        sync: false
+      # Set these after you know your Render URL
+      - key: META_REDIRECT_URI
+        sync: false
+      - key: INSTAGRAM_REDIRECT_URI
+        sync: false
+      # AI + Email
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: "Analytico <onboarding@resend.dev>"
+</content>

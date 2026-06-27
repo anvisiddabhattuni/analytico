@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-ink text-white font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 border border-white/10 backdrop-blur-xl;
+  }
+
+  .glass-input {
+    @apply w-full rounded-full bg-white/5 border border-white/10 px-5 py-3 text-sm text-white placeholder-white/40 outline-none transition focus:border-orange-400/60 focus:bg-white/10;
+  }
+}

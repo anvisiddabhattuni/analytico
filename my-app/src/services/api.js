@@ -66,6 +66,17 @@ export function login(email, password) {
   });
 }
 
+export function verifyEmail(token) {
+  return apiRequest(`/api/auth/verify/${token}`);
+}
+
+export function resendVerification(email) {
+  return apiRequest("/api/auth/resend-verification", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
 export function getAnalytics(platform) {
   return apiRequest(`/api/analytics?platform=${encodeURIComponent(platform)}`);
 }
@@ -75,4 +86,12 @@ export function getRecommendations(platform, question) {
     method: "POST",
     body: JSON.stringify({ platform, question }),
   });
+}
+
+export function getMetaOAuthUrl() {
+  return apiRequest("/api/auth/meta/start");
+}
+
+export function getInstagramOAuthUrl() {
+  return apiRequest("/api/auth/instagram/start");
 }

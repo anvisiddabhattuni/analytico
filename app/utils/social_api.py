@@ -3,80 +3,81 @@ import os
 MOCK_ANALYTICS = {
     "instagram": {
         "platform": "instagram",
-        "username": "@instagram",
+        "username": "@demo_creator",
         "data_source": "mock",
         "stats": {
-            "posts": "7987",
-            "followers": "686M",
-            "following": "161",
+            "posts": "247",
+            "followers": "12.4K",
+            "following": "521",
+        },
+        "stat_trends": {
+            "followers": "+8.2%",
+            "posts": "+3.1%",
         },
         "sections": [
             {
                 "title": "General",
                 "items": [
-                    {"label": "Page Viewers", "value": "12.4K"},
-                    {"label": "Shares Average", "value": "845"},
-                    {"label": "Saves Average", "value": "1.2K"},
+                    {"label": "Profile Views (28d)", "value": "14.2K"},
+                    {"label": "Avg. Shares", "value": "845"},
+                    {"label": "Avg. Saves", "value": "1.2K"},
                 ],
             },
             {
                 "title": "Reels",
                 "items": [
-                    {"label": "Average Views", "value": "45.2K"},
-                    {"label": "Shares Average", "value": "320"},
-                    {"label": "Saves Average", "value": "890"},
+                    {"label": "Avg. Views", "value": "45.2K"},
+                    {"label": "Avg. Shares", "value": "320"},
+                    {"label": "Avg. Saves", "value": "890"},
                 ],
             },
             {
-                "title": "Threads",
+                "title": "Top Posts",
                 "items": [
-                    {"label": "Likes", "value": "5.6K"},
-                    {"label": "Reposts", "value": "412"},
-                    {"label": "Shares", "value": "278"},
+                    {"label": "Reel #12", "value": "48.2K views"},
+                    {"label": "Story #7", "value": "21.1K views"},
+                    {"label": "Post #3", "value": "9.8K likes"},
                 ],
             },
         ],
     },
-    "tiktok": {
-        "platform": "tiktok",
-        "username": "@tiktok",
+    "facebook": {
+        "platform": "facebook",
+        "username": "Your Page",
         "data_source": "mock",
         "stats": {
-            "posts": "1243",
-            "followers": "82.1M",
-            "following": "89",
+            "page likes": "5,812",
+            "followers": "6.1K",
+            "posts": "342",
+        },
+        "stat_trends": {
+            "page likes": "+4.5%",
+            "followers": "+2.8%",
+            "posts": "+1.2%",
         },
         "sections": [
             {
-                "title": "Content",
+                "title": "Reach & Impressions",
                 "items": [
-                    {"label": "Posts", "value": "1,243"},
-                    {"label": "Likes", "value": "4.2M"},
-                    {"label": "Views", "value": "128M"},
-                    {"label": "Saves", "value": "890K"},
-                    {"label": "Shares", "value": "456K"},
+                    {"label": "Unique Reach (28d)", "value": "14.2K"},
+                    {"label": "Impressions (28d)", "value": "88.5K"},
+                    {"label": "Profile Views", "value": "2.3K"},
                 ],
             },
-        ],
-    },
-    "x": {
-        "platform": "x",
-        "username": "@X",
-        "data_source": "mock",
-        "stats": {
-            "posts": "28450",
-            "followers": "54.2M",
-            "following": "512",
-        },
-        "sections": [
             {
                 "title": "Engagement",
                 "items": [
-                    {"label": "Posts", "value": "28,450"},
-                    {"label": "Shares", "value": "1.1M"},
-                    {"label": "Reposts", "value": "890K"},
-                    {"label": "Likes", "value": "12.4M"},
-                    {"label": "Views", "value": "340M"},
+                    {"label": "Post Likes", "value": "3.1K"},
+                    {"label": "Comments", "value": "412"},
+                    {"label": "Shares", "value": "189"},
+                ],
+            },
+            {
+                "title": "Videos",
+                "items": [
+                    {"label": "Avg. Views", "value": "8.7K"},
+                    {"label": "Watch Time", "value": "4.2 min"},
+                    {"label": "Video Reach", "value": "11.4K"},
                 ],
             },
         ],
@@ -84,10 +85,9 @@ MOCK_ANALYTICS = {
 }
 
 PLATFORM_ALIASES = {
-    "twitter": "x",
-    "x": "x",
     "instagram": "instagram",
-    "tiktok": "tiktok",
+    "facebook": "facebook",
+    "fb": "facebook",
 }
 
 
@@ -95,13 +95,14 @@ def _analytics_mode():
     return os.environ.get("ANALYTICS_MODE", "mock").lower()
 
 
-def fetch_social_media_data(platform):
+def fetch_social_media_data(platform, username=None):
     normalized = PLATFORM_ALIASES.get(platform.lower(), platform.lower())
 
-    if _analytics_mode() == "live" and normalized == "instagram":
-        from app.utils.instagram_api import fetch_instagram_analytics
-
-        return fetch_instagram_analytics()
+    if _analytics_mode() == "live" and username:
+        from app.utils.meta_api import fetch_meta_analytics
+        live_data = fetch_meta_analytics(normalized, username)
+        if live_data:
+            return live_data
 
     data = dict(MOCK_ANALYTICS.get(normalized, MOCK_ANALYTICS["instagram"]))
     data["data_source"] = "mock"

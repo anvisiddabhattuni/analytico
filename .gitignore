@@ -31,6 +31,7 @@ wheels/
 # Virtual Environment
 venv/
 ENV/
+.venv-preview/
 
 # IDE
 .idea/
@@ -41,6 +42,9 @@ ENV/
 # Environment variables
 .env
 .env.local
+
+# SQLite database
+*.db
 
 # Logs
 *.log
