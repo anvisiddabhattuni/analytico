@@ -49,3 +49,6 @@ ENV/
 # Logs
 *.log
 
+# Claude Code local data (memory, settings, conversation cache)
+.claude/
+

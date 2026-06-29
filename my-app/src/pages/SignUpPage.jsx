@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ArrowRight,
   TrendingDown,
-  Camera,
   Globe,
   Bot,
 } from "lucide-react";
@@ -23,42 +22,41 @@ import { PrimaryButton, GhostButton } from "../components/ui/Button";
 import { AnalyticoBadge, AnalyticoWordmark } from "../components/ui/AnalyticoBadge";
 
 const PREVIEW_STATS = [
-  { label: "Followers", value: "12.4K", trend: "+8.2%", up: true },
+  { label: "Page Likes", value: "12.4K", trend: "+8.2%", up: true },
   { label: "Reach", value: "48.2K", trend: "+22%", up: true },
   { label: "Engagement", value: "4.8%", trend: "+1.1%", up: true },
-  { label: "Saves", value: "3.1K", trend: "-0.4%", up: false },
+  { label: "Shares", value: "3.1K", trend: "-0.4%", up: false },
 ];
 
 const PREVIEW_SECTIONS = [
   {
     title: "General",
     items: [
-      { label: "Profile Views", value: "14.2K" },
+      { label: "Page Views", value: "14.2K" },
       { label: "Avg. Shares", value: "845" },
-      { label: "Avg. Saves", value: "1.2K" },
+      { label: "Avg. Clicks", value: "1.2K" },
     ],
   },
   {
-    title: "Reels",
+    title: "Videos",
     items: [
       { label: "Avg. Views", value: "45.2K" },
       { label: "Avg. Shares", value: "320" },
-      { label: "Avg. Saves", value: "890" },
+      { label: "Avg. Reactions", value: "890" },
     ],
   },
   {
     title: "Top Posts",
     items: [
-      { label: "Reel #12", value: "48.2K" },
-      { label: "Story #7", value: "21.1K" },
+      { label: "Video #12", value: "48.2K" },
+      { label: "Post #7", value: "21.1K" },
       { label: "Post #3", value: "9.8K" },
     ],
   },
 ];
 
 const PLATFORM_TABS = [
-  { key: "instagram", label: "Instagram", Icon: Camera, active: true },
-  { key: "facebook", label: "Facebook", Icon: Globe, active: false },
+  { key: "facebook", label: "Facebook", Icon: Globe, active: true },
 ];
 
 const HOW_IT_WORKS = [
@@ -67,30 +65,30 @@ const HOW_IT_WORKS = [
     icon: <PlugZap className="h-6 w-6 text-orange-400" />,
     title: "Connect with Meta",
     description:
-      "One OAuth login links your Instagram and Facebook accounts. No complex setup — just authorize and your data is in.",
+      "One OAuth login links your Facebook Page. No complex setup — just authorize and your data is in.",
   },
   {
     step: "02",
     icon: <BarChart2 className="h-6 w-6 text-orange-400" />,
     title: "See it all clearly",
     description:
-      "A unified dashboard shows your growth, engagement, and reach across Instagram and Facebook side by side.",
+      "A clear dashboard shows your Page growth, engagement, reach, and top-performing posts — all in one place.",
   },
   {
     step: "03",
     icon: <TrendingUp className="h-6 w-6 text-orange-400" />,
     title: "Grow with purpose",
     description:
-      "GrowthBot reads your Meta data and tells you exactly what to post, when to post, and who to target.",
+      "GrowthBot reads your Facebook data and tells you exactly what to post, when to post, and who to target.",
   },
 ];
 
 const FEATURES = [
   {
     icon: <BarChart2 className="h-5 w-5 text-orange-400" />,
-    title: "Meta analytics hub",
+    title: "Facebook analytics hub",
     description:
-      "Instagram and Facebook stats in a single clear view — no more app-switching.",
+      "Page likes, reach, engagement, and top posts in a single clear view.",
   },
   {
     icon: <Zap className="h-5 w-5 text-orange-400" />,
@@ -147,14 +145,14 @@ function DashboardPreview() {
       </div>
 
       {/* Profile header */}
-      <div className="flex shrink-0 items-center gap-2.5 rounded-2xl border border-white/10 bg-gradient-to-r from-pink-500/15 to-orange-500/10 px-3 py-2.5 backdrop-blur-xl">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-pink-500/10 ring-1 ring-white/10">
-          <Camera className="h-4 w-4 text-pink-400" />
+      <div className="flex shrink-0 items-center gap-2.5 rounded-2xl border border-white/10 bg-gradient-to-r from-blue-500/15 to-blue-400/10 px-3 py-2.5 backdrop-blur-xl">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 ring-1 ring-white/10">
+          <Globe className="h-4 w-4 text-blue-400" />
         </span>
         <div className="flex-1 min-w-0">
-          <p className="font-display text-xs font-bold">@demo_creator</p>
+          <p className="font-display text-xs font-bold">Demo Page</p>
           <div className="flex items-center gap-1.5">
-            <span className="text-[9px] font-medium text-pink-400">Instagram</span>
+            <span className="text-[9px] font-medium text-blue-400">Facebook</span>
             <span className="rounded-full bg-white/8 px-1.5 py-px text-[8px] text-white/40">● Demo</span>
           </div>
         </div>
@@ -265,7 +263,7 @@ export default function SignUpPage() {
               transition={{ delay: 0.35 }}
               className="max-w-xl text-base leading-relaxed text-white/50 sm:text-lg"
             >
-              Pull your Instagram and Facebook analytics into one clear dashboard — see where
+              Pull your Facebook Page analytics into one clear dashboard — see where
               you're falling short and exactly what to do about it.
             </motion.p>
 
@@ -353,8 +351,8 @@ export default function SignUpPage() {
                 </span>
               </h2>
               <p className="mb-10 max-w-sm text-white/50 leading-relaxed">
-                Stop context-switching between apps. Analytico surfaces what matters from
-                Instagram and Facebook — all in one place.
+                Stop guessing what's working. Analytico surfaces what matters from
+                your Facebook Page — all in one place.
               </p>
             </FadeUp>
 

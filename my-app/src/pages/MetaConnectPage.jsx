@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Camera, Globe, ChevronRight, AlertCircle, Info } from 'lucide-react';
+import { Shield, Globe, ChevronRight, AlertCircle } from 'lucide-react';
 import { isAuthenticated, getMetaOAuthUrl } from '../services/api';
 import Background from '../components/ui/Background';
 import GlassCard from '../components/ui/GlassCard';
@@ -8,8 +8,7 @@ import { PrimaryButton, GhostButton } from '../components/ui/Button';
 import { AnalyticoBadge, AnalyticoWordmark } from '../components/ui/AnalyticoBadge';
 
 const PERMISSIONS = [
-  { icon: Camera, label: 'Instagram', detail: 'Followers, posts, reach & top media — via your linked Facebook Page' },
-  { icon: Globe, label: 'Facebook Page', detail: 'Page likes, impressions, engagement & post performance' },
+  { icon: Globe, label: 'Facebook Page', detail: 'Page likes, impressions, engagement, reach & top post performance' },
 ];
 
 export default function MetaConnectPage() {
@@ -29,7 +28,7 @@ export default function MetaConnectPage() {
       window.location.href = url;
     } catch (err) {
       if (err.status === 503) {
-        navigate('/loading-instagram');
+        navigate('/loading-facebook');
       } else {
         setError('Could not start connection. Please try again.');
         setLoading(false);
@@ -73,16 +72,6 @@ export default function MetaConnectPage() {
             ))}
           </div>
 
-          {/* Instagram tip */}
-          <div className="flex items-start gap-3 rounded-2xl border border-orange-500/15 bg-orange-500/8 px-4 py-3">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-orange-400" />
-            <div className="text-xs text-white/55 leading-relaxed">
-              <span className="font-semibold text-white/80">To see Instagram data:</span> make sure your
-              Instagram account is set to Business or Creator and is linked to a Facebook Page in
-              your Instagram settings before connecting.
-            </div>
-          </div>
-
           {/* Trust badge */}
           <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
             <Shield className="h-4 w-4 shrink-0 text-emerald-400" />
@@ -103,7 +92,7 @@ export default function MetaConnectPage() {
             <PrimaryButton onClick={handleConnect} disabled={loading} className="w-full">
               {loading ? 'Connecting…' : 'Connect with Meta'}
             </PrimaryButton>
-            <GhostButton onClick={() => navigate('/loading-instagram')} className="w-full">
+            <GhostButton onClick={() => navigate('/loading-facebook')} className="w-full">
               Try with demo data
             </GhostButton>
             <GhostButton onClick={() => navigate('/login')} className="w-full text-white/40">

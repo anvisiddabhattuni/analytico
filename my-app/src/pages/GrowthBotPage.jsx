@@ -6,19 +6,17 @@ import GlassCard from "../components/ui/GlassCard";
 import { PrimaryButton, GhostButton } from "../components/ui/Button";
 
 const PLATFORM_LABELS = {
-  instagram: "Instagram",
   facebook: "Facebook",
 };
 
 const PLATFORM_DASH_PATHS = {
-  instagram: "/instagram-dash",
   facebook: "/facebook-dash",
 };
 
 export default function GrowthBotPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const platform = location.state?.platform || "instagram";
+  const platform = location.state?.platform || "facebook";
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);

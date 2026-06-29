@@ -30,8 +30,6 @@ services:
         sync: false
       - key: META_REDIRECT_URI
         sync: false
-      - key: INSTAGRAM_REDIRECT_URI
-        sync: false
       # AI + Email
       - key: ANTHROPIC_API_KEY
         sync: false
