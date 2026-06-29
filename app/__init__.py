@@ -1,31 +1,19 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_pymongo import PyMongo
+
 from app.config import Config
-
-
-def _ensure_user_indexes(mongo):
-    mongo.db.users.create_index("username", unique=True)
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app, origins=app.config.get("CORS_ORIGINS", ["http://localhost:3000"]))
-
+    CORS(app, origins=app.config.get("CORS_ORIGINS", ["http://localhost:3001"]))
     JWTManager(app)
 
-    if not app.config["USE_MEMORY_DB"]:
-        mongo = PyMongo(app)
-        app.mongo = mongo
-        with app.app_context():
-            _ensure_user_indexes(mongo)
-    else:
-        app.mongo = None
-        from app.models import init_sqlite
-        init_sqlite()
+    from app.models import init_db
+    init_db()
 
     from app.routes.main import main_bp
     from app.routes.auth import auth_bp
