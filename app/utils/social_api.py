@@ -85,7 +85,7 @@ MOCK_ANALYTICS = {
 }
 
 PLATFORM_ALIASES = {
-    "instagram": "instagram",
+    "instagram": "facebook",
     "facebook": "facebook",
     "fb": "facebook",
 }

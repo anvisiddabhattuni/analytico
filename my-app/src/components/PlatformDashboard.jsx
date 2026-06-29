@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TrendingUp, TrendingDown, Bot, Sparkles, Camera, Globe } from "lucide-react";
+import { TrendingUp, TrendingDown, Bot, Sparkles, Globe } from "lucide-react";
 import { getAnalytics, isAuthenticated } from "../services/api";
 import Background from "./ui/Background";
 import GlassCard from "./ui/GlassCard";
@@ -8,15 +8,6 @@ import { PrimaryButton, GhostButton } from "./ui/Button";
 import Navbar from "./Navbar";
 
 const PLATFORM_CONFIG = {
-  instagram: {
-    label: "Instagram",
-    color: "from-pink-500/20 to-orange-500/20",
-    glow: "shadow-[0_0_60px_rgba(249,115,22,0.08)]",
-    accent: "text-pink-400",
-    Icon: Camera,
-    iconColor: "text-pink-400",
-    iconBg: "bg-pink-500/10",
-  },
   facebook: {
     label: "Facebook",
     color: "from-blue-600/20 to-blue-400/10",
@@ -69,7 +60,7 @@ function SectionCard({ section }) {
 
 export default function PlatformDashboard({ platform }) {
   const navigate = useNavigate();
-  const config = PLATFORM_CONFIG[platform];
+  const config = PLATFORM_CONFIG[platform] || PLATFORM_CONFIG.facebook;
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);

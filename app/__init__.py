@@ -21,12 +21,10 @@ def create_app():
     from app.routes.recommendations import recommendations_bp
     from app.routes.reports import reports_bp
     from app.routes.meta_auth import meta_auth_bp
-    from app.routes.instagram_auth import instagram_auth_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(meta_auth_bp, url_prefix="/api/auth/meta")
-    app.register_blueprint(instagram_auth_bp, url_prefix="/api/auth/instagram")
     app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
     app.register_blueprint(recommendations_bp, url_prefix="/api/recommendations")
     app.register_blueprint(reports_bp, url_prefix="/api/reports")
