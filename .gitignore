@@ -52,3 +52,6 @@ ENV/
 # Claude Code local data (memory, settings, conversation cache)
 .claude/
 
+# Un-ignore frontend lib/ (root lib/ rule is for Python venv only)
+!my-app/src/lib/
+
