@@ -10,7 +10,7 @@ class Config:
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or "jwt-secret-key"
     CORS_ORIGINS = [
         origin.strip()
-        for origin in os.environ.get("CORS_ORIGINS", "http://localhost:3001").split(",")
+        for origin in os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
         if origin.strip()
     ]
     # mock = demo data | live = real Meta APIs when OAuth token exists

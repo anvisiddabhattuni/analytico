@@ -1,41 +1,47 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-import CreateAccountPage from "./pages/CreateAccountPage";
-import VerifyEmailPage from "./pages/VerifyEmailPage";
-import FacebookDashboardFree from "./pages/FacebookDashboardFree";
-import MetaConnectPage from "./pages/MetaConnectPage";
-import LoginAnalyticsPage from "./pages/LoginAnalyticsPage";
-import LogInPage from "./pages/LogInPage";
 import SignUpPage from "./pages/SignUpPage";
-import LoadingPageFacebook from "./pages/LoadingPageFacebook";
-import GrowthBotPage from "./pages/GrowthBotPage";
+import LoadingScreen from "./components/ui/LoadingScreen";
+
+// Route-level code splitting — only the landing page loads eagerly
+const CreateAccountPage = lazy(() => import("./pages/CreateAccountPage"));
+const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage"));
+const FacebookDashboardFree = lazy(() => import("./pages/FacebookDashboardFree"));
+const MetaConnectPage = lazy(() => import("./pages/MetaConnectPage"));
+const LoginAnalyticsPage = lazy(() => import("./pages/LoginAnalyticsPage"));
+const LogInPage = lazy(() => import("./pages/LogInPage"));
+const LoadingPageFacebook = lazy(() => import("./pages/LoadingPageFacebook"));
+const GrowthBotPage = lazy(() => import("./pages/GrowthBotPage"));
 
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* Landing + Auth */}
-        <Route path="/" element={<SignUpPage />} />
-        <Route path="/create-account" element={<CreateAccountPage />} />
-        <Route path="/login-analytics" element={<LoginAnalyticsPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Suspense fallback={<LoadingScreen message="Loading…" />}>
+        <Routes>
+          {/* Landing + Auth */}
+          <Route path="/" element={<SignUpPage />} />
+          <Route path="/create-account" element={<CreateAccountPage />} />
+          <Route path="/login-analytics" element={<LoginAnalyticsPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
 
-        {/* Platform selector + Meta connect */}
-        <Route path="/login" element={<LogInPage />} />
-        <Route path="/meta-connect" element={<MetaConnectPage />} />
+          {/* Facebook connect */}
+          <Route path="/login" element={<LogInPage />} />
+          <Route path="/meta-connect" element={<MetaConnectPage />} />
 
-        {/* Loading — /loading-instagram kept because OAuth callback redirects here */}
-        <Route path="/loading-instagram" element={<LoadingPageFacebook />} />
-        <Route path="/loading-facebook" element={<LoadingPageFacebook />} />
+          {/* Loading */}
+          <Route path="/loading-facebook" element={<LoadingPageFacebook />} />
 
-        {/* Dashboard */}
-        <Route path="/facebook-dash" element={<FacebookDashboardFree />} />
-        <Route path="/instagram-dash" element={<FacebookDashboardFree />} />
+          {/* Dashboard */}
+          <Route path="/facebook-dash" element={<FacebookDashboardFree />} />
 
-        {/* GrowthBot */}
-        <Route path="/growth-bot" element={<GrowthBotPage />} />
-      </Routes>
+          {/* GrowthBot */}
+          <Route path="/growth-bot" element={<GrowthBotPage />} />
+
+          {/* Unknown paths → landing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

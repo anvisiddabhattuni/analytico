@@ -1,6 +1,6 @@
-# KTP-Analytico
+# Analytico
 
-Analytico helps social media managers and creators understand their analytics and grow their accounts. React frontend + Flask API.
+Analytico helps social media managers and creators understand their Facebook Page analytics and grow their accounts. React frontend + Flask API, with an AI assistant (GrowthBot) powered by Anthropic.
 
 ## Quick Start (Local)
 
@@ -16,7 +16,7 @@ python run.py
 
 API: `http://localhost:5001`
 
-For local dev without MongoDB, set `USE_MEMORY_DB=true` in `.env`.
+The backend uses SQLite (`analytico.db`) by default. Set `DATABASE_URL` to use PostgreSQL instead.
 
 ### Frontend
 
@@ -31,7 +31,7 @@ App: `http://localhost:3000`
 
 ## Deploy to Production
 
-See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for MongoDB Atlas + Render + Vercel setup.
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for Render + Vercel setup.
 
 ## API Contract
 
@@ -51,4 +51,4 @@ DEPLOYMENT.md     Production setup guide
 | Mode | Use case |
 |------|----------|
 | `ANALYTICS_MODE=mock` | Portfolio demo (default) |
-| `ANALYTICS_MODE=live` | Real Instagram Graph API when credentials are set |
+| `ANALYTICS_MODE=live` | Real Facebook Page data via Meta Graph API (requires Meta OAuth) |

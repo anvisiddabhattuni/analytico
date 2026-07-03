@@ -16,6 +16,6 @@ def health():
         {
             "status": "ok",
             "analytics_mode": os.environ.get("ANALYTICS_MODE", "mock"),
-            "use_memory_db": os.environ.get("USE_MEMORY_DB", "false"),
+            "database": "postgres" if os.environ.get("DATABASE_URL") else "sqlite",
         }
     )

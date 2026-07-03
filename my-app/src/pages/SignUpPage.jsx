@@ -286,7 +286,7 @@ export default function SignUpPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
-              className="flex flex-col items-center gap-1 text-white/25"
+              className="flex flex-col items-center gap-1 text-white/45"
             >
               <span className="text-xs tracking-widest uppercase">Scroll to explore</span>
               <motion.div

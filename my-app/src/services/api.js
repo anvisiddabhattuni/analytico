@@ -91,7 +91,3 @@ export function getRecommendations(platform, question) {
 export function getMetaOAuthUrl() {
   return apiRequest("/api/auth/meta/start");
 }
-
-export function getInstagramOAuthUrl() {
-  return apiRequest("/api/auth/instagram/start");
-}

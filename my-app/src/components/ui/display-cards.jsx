@@ -13,7 +13,7 @@ function DisplayCard({
   return (
     <div
       className={cn(
-        "relative flex h-36 w-[22rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-3 transition-all duration-700",
+        "relative flex h-36 w-[22rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-3 transition-[transform,border-color,background-color] duration-700",
         "after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[20rem] after:bg-gradient-to-l after:from-[#08070b] after:to-transparent after:content-['']",
         "hover:border-white/20 hover:bg-white/8",
         "[&>*]:flex [&>*]:items-center [&>*]:gap-2",
@@ -26,7 +26,7 @@ function DisplayCard({
         </span>
         <p className={cn("text-lg font-semibold font-display", titleClassName)}>{title}</p>
       </div>
-      <p className="whitespace-nowrap text-sm text-white/80">{description}</p>
+      <p className="truncate text-sm text-white/80">{description}</p>
       <p className="text-xs text-white/40">{date}</p>
     </div>
   );
@@ -37,9 +37,9 @@ export default function DisplayCards({ cards }) {
     {
       className:
         "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-full before:rounded-xl before:h-full before:content-[''] before:bg-black/30 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-      icon: <span className="text-xs font-bold text-orange-300">IG</span>,
-      title: "Instagram",
-      description: "12.4K followers · 4.8% engagement",
+      icon: <span className="text-xs font-bold text-orange-300">AI</span>,
+      title: "GrowthBot",
+      description: "Personalized AI growth tips",
       date: "Updated just now",
       iconClassName: "bg-orange-500/20",
       titleClassName: "text-orange-400",
@@ -56,9 +56,9 @@ export default function DisplayCards({ cards }) {
     },
     {
       className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
-      icon: <span className="text-xs font-bold text-white/60">Th</span>,
-      title: "Threads",
-      description: "3.1K followers · 892 avg. reposts",
+      icon: <span className="text-xs font-bold text-white/60">In</span>,
+      title: "Insights",
+      description: "Reach, impressions & engagement",
       date: "Updated just now",
       iconClassName: "bg-white/10",
       titleClassName: "text-white/70",

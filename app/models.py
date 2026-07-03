@@ -30,7 +30,6 @@ def _sqlite_conn():
 
 def init_db():
     if _use_postgres():
-        import psycopg2.extras
         conn = _pg_conn()
         cur = conn.cursor()
         cur.execute("""
@@ -39,12 +38,19 @@ def init_db():
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 meta_access_token TEXT,
-                instagram_access_token TEXT,
                 email_verified BOOLEAN DEFAULT FALSE,
                 verification_token TEXT,
                 verification_token_expires TIMESTAMPTZ
             )
         """)
+        # Migrate pre-existing tables that are missing newer columns
+        for col, defn in [
+            ("meta_access_token", "TEXT"),
+            ("email_verified", "BOOLEAN DEFAULT FALSE"),
+            ("verification_token", "TEXT"),
+            ("verification_token_expires", "TIMESTAMPTZ"),
+        ]:
+            cur.execute(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col} {defn}")
         conn.commit()
         cur.close()
         conn.close()
@@ -56,7 +62,6 @@ def init_db():
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 meta_access_token TEXT,
-                instagram_access_token TEXT,
                 email_verified INTEGER DEFAULT 0,
                 verification_token TEXT,
                 verification_token_expires TEXT
@@ -64,7 +69,6 @@ def init_db():
         """)
         for col, defn in [
             ("meta_access_token", "TEXT"),
-            ("instagram_access_token", "TEXT"),
             ("email_verified", "INTEGER DEFAULT 0"),
             ("verification_token", "TEXT"),
             ("verification_token_expires", "TEXT"),
@@ -221,26 +225,3 @@ class User:
     def get_meta_token(username):
         user = User.find_by_username(username)
         return (user or {}).get("meta_access_token")
-
-    # ── Instagram token ──
-
-    @staticmethod
-    def set_instagram_token(username, token):
-        if _use_postgres():
-            User._pg_execute(
-                "UPDATE users SET instagram_access_token = %s WHERE username = %s",
-                (token, username),
-            )
-        else:
-            conn = _sqlite_conn()
-            conn.execute(
-                "UPDATE users SET instagram_access_token = ? WHERE username = ?",
-                (token, username),
-            )
-            conn.commit()
-            conn.close()
-
-    @staticmethod
-    def get_instagram_token(username):
-        user = User.find_by_username(username)
-        return (user or {}).get("instagram_access_token")

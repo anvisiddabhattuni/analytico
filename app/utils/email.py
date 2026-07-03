@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 def _verify_url(token: str) -> str:
-    frontend = os.environ.get("FRONTEND_URL", "http://localhost:3001")
+    frontend = os.environ.get("FRONTEND_URL", "http://localhost:3000")
     return f"{frontend}/verify-email?token={token}"
 
 

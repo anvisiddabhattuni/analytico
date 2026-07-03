@@ -40,7 +40,10 @@ export default function GrowthBotPage() {
 
     try {
       const data = await getRecommendations(platform, question);
-      setMessages((prev) => [...prev, { role: "bot", content: data.recommendations || [] }]);
+      const recs = Array.isArray(data.recommendations)
+        ? data.recommendations
+        : [String(data.recommendations ?? "No recommendations available right now.")];
+      setMessages((prev) => [...prev, { role: "bot", content: recs }]);
     } catch (err) {
       if (err.status === 401) {
         navigate("/login-analytics");
@@ -55,7 +58,7 @@ export default function GrowthBotPage() {
   return (
     <Background className="flex min-h-screen flex-col">
       <header className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-6">
-        <GhostButton onClick={() => navigate(PLATFORM_DASH_PATHS[platform] || "/login")}>
+        <GhostButton onClick={() => navigate(PLATFORM_DASH_PATHS[platform] || "/facebook-dash")}>
           &larr; Back
         </GhostButton>
         <div className="flex items-center gap-2">
@@ -103,26 +106,29 @@ export default function GrowthBotPage() {
         )}
 
         {typing && (
-          <GlassCard className="max-w-xs p-4 text-sm italic text-white/50">
-            GrowthBot is thinking...
+          <GlassCard aria-live="polite" className="max-w-xs p-4 text-sm italic text-white/50">
+            GrowthBot is thinking…
           </GlassCard>
         )}
 
         {error && (
-          <div className="max-w-md rounded-3xl border border-red-400/30 bg-red-500/10 px-5 py-3 text-sm text-red-300">
+          <div role="alert" className="max-w-md rounded-3xl border border-red-400/30 bg-red-500/10 px-5 py-3 text-sm text-red-300">
             {error}
           </div>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 px-6 pb-8 pt-4">
-        <div className="glass mx-auto flex max-w-3xl items-center gap-3 rounded-full p-2 pl-6 shadow-glow">
+      <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-4">
+        <div className="glass mx-auto flex max-w-3xl items-center gap-3 rounded-full p-2 pl-6 shadow-glow transition-shadow focus-within:ring-2 focus-within:ring-orange-400/60">
           <input
             type="text"
+            name="question"
+            aria-label="Ask GrowthBot a question"
+            autoComplete="off"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask GrowthBot a question..."
-            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none"
+            placeholder="Ask GrowthBot a question…"
+            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none focus-visible:ring-0"
           />
           <PrimaryButton type="submit" className="px-5 py-2.5">
             Send

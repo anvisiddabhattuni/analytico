@@ -45,7 +45,7 @@ export default function VerifyEmailPage() {
         </div>
 
         {status === "loading" && (
-          <div className="flex flex-col items-center gap-4 py-6 text-center">
+          <div role="status" aria-live="polite" className="flex flex-col items-center gap-4 py-6 text-center">
             <div className="flex space-x-2">
               {[0, 150, 300].map((delay) => (
                 <div
@@ -65,7 +65,7 @@ export default function VerifyEmailPage() {
               <CheckCircle className="h-7 w-7 text-emerald-400" />
             </span>
             <div>
-              <h2 className="font-display text-2xl font-bold">You're verified!</h2>
+              <h1 className="font-display text-2xl font-bold">You're verified!</h1>
               <p className="mt-2 text-sm text-white/55">
                 Your email is confirmed. You can now log in and start tracking your growth.
               </p>
@@ -82,7 +82,7 @@ export default function VerifyEmailPage() {
               <XCircle className="h-7 w-7 text-red-400" />
             </span>
             <div>
-              <h2 className="font-display text-2xl font-bold">Link expired</h2>
+              <h1 className="font-display text-2xl font-bold">Link expired</h1>
               <p className="mt-2 text-sm text-white/55">
                 {message || "This verification link is invalid or has expired."}
               </p>

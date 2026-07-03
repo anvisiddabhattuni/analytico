@@ -1,19 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 export function AnimatedHeroText() {
   const [titleNumber, setTitleNumber] = useState(0);
+  const reduceMotion = useReducedMotion();
   const titles = useMemo(
     () => ["grow.", "go viral.", "stand out.", "engage.", "monetize."],
     []
   );
 
   useEffect(() => {
-    const id = setTimeout(() => {
+    if (reduceMotion) return undefined;
+    const id = setInterval(() => {
       setTitleNumber((n) => (n === titles.length - 1 ? 0 : n + 1));
     }, 2200);
-    return () => clearTimeout(id);
-  }, [titleNumber, titles]);
+    return () => clearInterval(id);
+  }, [reduceMotion, titles]);
 
   return (
     <h1 className="max-w-3xl font-display text-5xl font-semibold leading-tight sm:text-6xl">

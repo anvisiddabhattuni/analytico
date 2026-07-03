@@ -22,7 +22,8 @@ def _format_analytics(analytics):
 
 
 def get_recommendations(input_data):
-    platform = (input_data or {}).get("platform", "instagram")
+    platform = (input_data or {}).get("platform", "facebook")
+    username = (input_data or {}).get("username")
     question = (input_data or {}).get("question", "").strip() or "Give me growth tips based on my analytics."
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -33,7 +34,7 @@ def get_recommendations(input_data):
         import anthropic
         from app.utils.social_api import fetch_social_media_data
 
-        analytics = fetch_social_media_data(platform)
+        analytics = fetch_social_media_data(platform, username)
         analytics_text = _format_analytics(analytics)
 
         client = anthropic.Anthropic(api_key=api_key)

@@ -94,9 +94,9 @@ export default function PlatformDashboard({ platform }) {
   if (loading) {
     return (
       <Background className="flex min-h-screen items-center justify-center">
-        <div className="relative flex h-16 w-16 items-center justify-center">
+        <div role="status" aria-label="Loading analytics" className="relative flex h-16 w-16 items-center justify-center">
           <div className="absolute inset-0 rounded-full border-2 border-white/8" />
-          <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-orange-400" />
+          <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-orange-400 motion-reduce:animate-none" />
         </div>
       </Background>
     );
@@ -116,7 +116,7 @@ export default function PlatformDashboard({ platform }) {
 
   return (
     <Background>
-      <Navbar active={platform} />
+      <Navbar />
 
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 pb-24">
 
@@ -149,7 +149,7 @@ export default function PlatformDashboard({ platform }) {
         {data.data_source === "mock" && (
           <div className="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-xs text-white/40">
             <span className="font-semibold text-white/60">Showing demo data.</span>{" "}
-            Connect a Facebook Page or Instagram Business account to see your real analytics.
+            Connect a Facebook Page to see your real analytics.
           </div>
         )}
 
@@ -161,21 +161,18 @@ export default function PlatformDashboard({ platform }) {
         </div>
 
         {/* GrowthBot banner */}
-        <div
-          className="relative cursor-pointer overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-r from-orange-500/10 via-red-500/8 to-orange-400/5 p-6 transition duration-200 hover:border-orange-500/35 hover:from-orange-500/15"
-          onClick={() => navigate("/growth-bot", { state: { platform } })}
-        >
+        <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-r from-orange-500/10 via-red-500/8 to-orange-400/5 p-6 transition-colors duration-200 hover:border-orange-500/35 hover:from-orange-500/15">
           <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-orange-500/10 blur-2xl" />
           <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-500/15 ring-1 ring-orange-500/20">
-                <Bot className="h-6 w-6 text-orange-400" />
+                <Bot aria-hidden="true" className="h-6 w-6 text-orange-400" />
               </span>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-display text-lg font-bold">GrowthBot</h3>
                   <span className="flex items-center gap-1 rounded-full bg-orange-500/15 px-2.5 py-0.5 text-xs font-medium text-orange-400">
-                    <Sparkles className="h-3 w-3" />
+                    <Sparkles aria-hidden="true" className="h-3 w-3" />
                     AI
                   </span>
                 </div>
@@ -185,7 +182,7 @@ export default function PlatformDashboard({ platform }) {
               </div>
             </div>
             <PrimaryButton
-              onClick={(e) => { e.stopPropagation(); navigate("/growth-bot", { state: { platform } }); }}
+              onClick={() => navigate("/growth-bot", { state: { platform } })}
               className="shrink-0 self-start sm:self-auto"
             >
               Ask GrowthBot

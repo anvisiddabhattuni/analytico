@@ -1,6 +1,6 @@
 import re
 
-from flask import Flask, request, make_response
+from flask import Flask, jsonify, request, make_response
 from flask_jwt_extended import JWTManager
 
 from app.config import Config
@@ -33,13 +33,26 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    JWTManager(app)
+    jwt = JWTManager(app)
+
+    # Consistent { "message": ... } error shape (frontend reads data.message)
+    @jwt.expired_token_loader
+    def _expired_token(_header, _payload):
+        return jsonify({"message": "Session expired. Please log in again."}), 401
+
+    @jwt.invalid_token_loader
+    def _invalid_token(_reason):
+        return jsonify({"message": "Invalid session. Please log in again."}), 401
+
+    @jwt.unauthorized_loader
+    def _missing_token(_reason):
+        return jsonify({"message": "Authentication required."}), 401
 
     @app.before_request
     def handle_preflight():
         if request.method == "OPTIONS":
             origin = request.headers.get("Origin", "")
-            allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3001"])
+            allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3000"])
             if _origin_ok(origin, allowed):
                 resp = make_response("", 204)
                 for k, v in _cors_headers(origin).items():
@@ -49,7 +62,7 @@ def create_app():
     @app.after_request
     def apply_cors(response):
         origin = request.headers.get("Origin", "")
-        allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3001"])
+        allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3000"])
         if _origin_ok(origin, allowed):
             for k, v in _cors_headers(origin).items():
                 response.headers[k] = v

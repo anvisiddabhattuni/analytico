@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Shield, Globe, ChevronRight, AlertCircle } from 'lucide-react';
 import { isAuthenticated, getMetaOAuthUrl } from '../services/api';
 import Background from '../components/ui/Background';
@@ -16,9 +16,9 @@ export default function MetaConnectPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!isAuthenticated()) navigate('/login-analytics');
-  }, [navigate]);
+  if (!isAuthenticated()) {
+    return <Navigate to="/login-analytics" replace />;
+  }
 
   const handleConnect = async () => {
     setLoading(true);
@@ -82,8 +82,8 @@ export default function MetaConnectPage() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3">
-              <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+            <div role="alert" className="flex items-center gap-2 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3">
+              <AlertCircle aria-hidden="true" className="h-4 w-4 shrink-0 text-red-400" />
               <p className="text-sm text-red-300">{error}</p>
             </div>
           )}

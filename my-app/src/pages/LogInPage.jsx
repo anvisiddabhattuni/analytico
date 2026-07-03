@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../services/api';
 import Background from '../components/ui/Background';
 import GlassCard from '../components/ui/GlassCard';
@@ -9,9 +9,9 @@ import { Globe, ShieldCheck, BarChart2 } from 'lucide-react';
 function LogInPage() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isAuthenticated()) navigate('/login-analytics');
-  }, [navigate]);
+  if (!isAuthenticated()) {
+    return <Navigate to="/login-analytics" replace />;
+  }
 
   return (
     <Background className="flex min-h-screen flex-col items-center justify-center px-6 py-12">
@@ -54,8 +54,8 @@ function LogInPage() {
           </PrimaryButton>
 
           <div className="flex items-center justify-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-white/25" />
-            <span className="text-xs text-white/25">Read-only · Secure OAuth 2.0 · Revoke anytime</span>
+            <ShieldCheck aria-hidden="true" className="h-3.5 w-3.5 text-white/45" />
+            <span className="text-xs text-white/45">Read-only · Secure OAuth 2.0 · Revoke anytime</span>
           </div>
 
         </GlassCard>

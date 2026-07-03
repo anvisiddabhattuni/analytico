@@ -1,14 +1,10 @@
-## Read the front end skill before making any frontend edits
-
----
-
 # Analytico — Project Reference
 
 ## What this app is
 
-Analytico is a social media analytics dashboard for creators and social media managers. It shows stats across Instagram, TikTok, and X in one place, and includes GrowthBot — an AI assistant that gives growth recommendations based on the user's data.
+Analytico is a Facebook Page analytics dashboard for creators and social media managers. It shows Page stats (reach, impressions, engagement) in one place, and includes GrowthBot — an AI assistant (Anthropic Claude) that gives growth recommendations based on the user's data.
 
-**Status:** In development. UI is complete. Backend runs with mock data. GrowthBot returns hardcoded answers. No real social API connections yet.
+**Status:** Facebook-only via Meta OAuth. `ANALYTICS_MODE=mock` serves demo data; `ANALYTICS_MODE=live` fetches real Page data with the user's stored Meta token. Instagram/TikTok/X support was removed.
 
 **Team:** Frontend (Anvi — lead, Ayush, Anvitha) · Backend (Jeevika, Simon)
 
@@ -16,8 +12,8 @@ Analytico is a social media analytics dashboard for creators and social media ma
 
 ## Running the app
 
-- **Frontend:** `cd my-app && PORT=3001 npm start` → http://localhost:3001
-- **Backend:** `USE_MEMORY_DB=true ANALYTICS_MODE=mock CORS_ORIGINS=http://localhost:3001 python run.py` → http://localhost:5001
+- **Frontend:** `cd my-app && npm start` → http://localhost:3000
+- **Backend:** `python run.py` → http://localhost:5001 (SQLite `analytico.db` by default)
 - All `.jsx` files (not TypeScript). Never create `.tsx` or `.ts` files.
 
 ---
@@ -33,10 +29,11 @@ Analytico is a social media analytics dashboard for creators and social media ma
 - `cn()` utility at `src/lib/utils.js`
 
 ### Backend (`app/`)
-- Flask + Flask-JWT-Extended + Flask-CORS
-- MongoDB via Flask-PyMongo (currently bypassed by `USE_MEMORY_DB=true`)
-- Blueprints: `main`, `auth`, `analytics`, `recommendations`, `reports`
-- Routes prefixed: `/api/auth`, `/api/analytics`, `/api/recommendations`, `/api/reports`
+- Flask + Flask-JWT-Extended (manual CORS handling in `app/__init__.py`)
+- SQLite locally, PostgreSQL via `DATABASE_URL` in production
+- Blueprints: `main`, `auth`, `meta_auth`, `analytics`, `recommendations`, `reports`
+- Routes prefixed: `/api/auth`, `/api/auth/meta`, `/api/analytics`, `/api/recommendations`, `/api/reports`
+- External APIs: Meta Graph API (`app/utils/meta_api.py`), Anthropic (`app/utils/ml_model.py`), Resend (`app/utils/email.py`)
 
 ---
 
@@ -59,59 +56,25 @@ Analytico is a social media analytics dashboard for creators and social media ma
 
 ### Component conventions
 - Glass cards: `bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl`
-- Dashboard card bg: `bg-[#211d32]` outer, `bg-[#261f3a]` inner
 - Buttons: `PrimaryButton` (orange gradient) and `GhostButton` (glass) from `src/components/ui/Button.jsx`
 
 ---
 
-## File Structure
+## Routes (App.js)
 
-```
-analytico/
-├── my-app/                          # React frontend
-│   ├── public/index.html            # Google Fonts loaded here (Syne + DM Sans)
-│   ├── tailwind.config.js
-│   └── src/
-│       ├── App.js                   # All routes defined here
-│       ├── index.css                # .glass, .glass-input utilities
-│       ├── lib/utils.js             # cn() helper
-│       ├── services/                # API calls (api.js — login, register, getAnalytics)
-│       ├── pages/
-│       │   ├── SignUpPage.jsx       # Landing page (has own sticky nav, NO Navbar component)
-│       │   ├── CreateAccountPage.jsx
-│       │   ├── LoginAnalyticsPage.jsx
-│       │   ├── LogInPage.jsx        # Platform select after auth
-│       │   ├── InstagramLogInPage.jsx / SignTikTokPage.jsx / SignXPage.jsx
-│       │   ├── LoadingPageInstagram.jsx / LoadingPageTikTok.jsx / LoadingPageX.jsx
-│       │   ├── InstagramDashFree.jsx / TikTokDashboardFree.jsx / XDashboardFree.jsx
-│       │   └── GrowthBotPage.jsx    # Currently returns mock answers
-│       └── components/
-│           ├── Navbar.jsx           # Platform switcher nav (used inside dashboard pages only)
-│           ├── PlatformDashboard.jsx # Shared dashboard shell for all 3 platforms
-│           └── ui/
-│               ├── AnalyticoBadge.jsx      # Logo components (see below)
-│               ├── Background.jsx          # Wraps all pages, adds glow + BackgroundPathsLayer
-│               ├── Button.jsx              # PrimaryButton, GhostButton
-│               ├── GlassCard.jsx
-│               ├── animated-hero.jsx       # AnimatedHeroText — cycles growth phrases
-│               ├── background-paths.jsx    # FloatingPaths + BackgroundPathsLayer (orange SVG ribbons)
-│               ├── container-scroll-animation.jsx  # ContainerScroll 3D tilt on scroll
-│               ├── display-cards.jsx       # Stacked skewed platform cards
-│               └── expandable-tabs.jsx     # ExpandableTabs — icon tabs that expand on hover
-├── app/                             # Flask backend
-│   ├── __init__.py                  # App factory, blueprint registration
-│   ├── config.py
-│   ├── routes/
-│   │   ├── auth.py                  # /api/auth/login, /api/auth/register
-│   │   ├── analytics.py             # /api/analytics/<platform>
-│   │   ├── recommendations.py
-│   │   └── reports.py
-│   └── utils/
-├── run.py                           # Entry point
-├── requirements.txt
-├── render.yaml / Procfile           # Deployment config
-└── API_CONTRACT.md                  # Frontend↔backend data contract
-```
+| Path | Component |
+|------|-----------|
+| `/` | `SignUpPage` (landing) |
+| `/create-account` | `CreateAccountPage` |
+| `/login-analytics` | `LoginAnalyticsPage` |
+| `/verify-email` | `VerifyEmailPage` |
+| `/login` | `LogInPage` (Facebook connect intro) |
+| `/meta-connect` | `MetaConnectPage` (OAuth permissions + connect) |
+| `/loading-facebook` | `LoadingPageFacebook` |
+| `/facebook-dash` | `FacebookDashboardFree` |
+| `/growth-bot` | `GrowthBotPage` |
+
+The Meta OAuth callback (`/api/auth/meta/callback`) redirects the browser to `{FRONTEND_URL}/loading-facebook`.
 
 ---
 
@@ -131,44 +94,6 @@ Logo usage pattern:
 
 ---
 
-## Routes (App.js)
-
-| Path | Component |
-|------|-----------|
-| `/` | `SignUpPage` (landing) |
-| `/create-account` | `CreateAccountPage` |
-| `/login-analytics` | `LoginAnalyticsPage` |
-| `/login` | `LogInPage` (platform selector) |
-| `/instagram-login` | `InstagramLogInPage` |
-| `/tiktok-login` | `SignTikTokPage` |
-| `/x-login` | `SignXPage` |
-| `/loading-instagram` | `LoadingPageInstagram` |
-| `/instagram-dash` | `InstagramDashFree` |
-| `/tiktok-dash` | `TikTokDashboardFree` |
-| `/x-dash` | `XDashboardFree` |
-| `/growth-bot` | `GrowthBotPage` |
-
----
-
-## What's working vs. what needs building
-
-### Done
-- Full UI (landing, auth, dashboards, GrowthBot shell)
-- JWT auth flow (login/register/logout)
-- Mock analytics data flowing through dashboards
-- Navbar with platform ExpandableTabs
-- ContainerScroll dashboard preview on landing page
-- Background animated paths
-
-### Needs building (priority order)
-1. **Real database** — replace `USE_MEMORY_DB=true` with SQLite or Postgres so users persist
-2. **GrowthBot AI** — connect `GrowthBotPage.jsx` to Claude API (`claude-sonnet-4-6`); pass user's platform analytics as context
-3. **Per-user persistent mock analytics** — each user account should see consistent mock data
-4. **Social API OAuth** — Instagram Graph API, TikTok API, X API (requires app review; do last)
-5. **Production deployment** — scaffold exists in `render.yaml` / `Procfile`
-
----
-
 ## Key rules
 - All components are `.jsx`, never `.tsx` / `.ts`
 - Read the front-end skill before making UI edits
@@ -176,5 +101,5 @@ Logo usage pattern:
 - `<Navbar>` is only used inside the authenticated dashboard pages
 - Don't duplicate "Analytico" text — only one logo instance per page/view
 - No payment plans, no pricing tiers — free only
-- Dashboard card backgrounds: outer `bg-[#211d32]`, inner `bg-[#261f3a]`
+- Registration auto-verifies emails (MVP) — after register the frontend logs the user in immediately
 - ContainerScroll rotation: `[12, 0]` degrees (not the default 20)

@@ -16,7 +16,7 @@ Authorization: Bearer <access_token>
 
 ### `POST /api/auth/register`
 
-Create an Analytico account.
+Create an Analytico account. Accounts are auto-verified on creation (MVP behavior).
 
 **Request**
 ```json
@@ -29,7 +29,7 @@ Create an Analytico account.
 `username` is also accepted instead of `email`.
 
 **Responses**
-- `201` — `{ "message": "User registered successfully" }`
+- `201` — `{ "message": "Account created successfully." }`
 - `400` — missing fields
 - `409` — user already exists
 
@@ -47,47 +47,63 @@ Create an Analytico account.
 - `200` — `{ "access_token": "<jwt>", "username": "user@example.com" }`
 - `401` — invalid credentials
 
+### `GET /api/auth/meta/start` (protected)
+
+Returns the Meta OAuth dialog URL.
+
+**Response `200`** — `{ "url": "https://www.facebook.com/dialog/oauth?..." }`
+**Response `503`** — Meta OAuth not configured on the server
+
+### `GET /api/auth/meta/callback`
+
+OAuth redirect target. Exchanges the code for a long-lived token, stores it, then redirects the browser to `{FRONTEND_URL}/loading-facebook`.
+
 ---
 
 ## Analytics
 
-### `GET /api/analytics?platform=<platform>`
+### `GET /api/analytics?platform=<platform>` (protected)
 
-**Query params:** `platform` = `instagram` | `tiktok` | `x` (aliases: `twitter` → `x`)
+**Query params:** `platform` = `facebook` (alias: `fb`). Defaults to `facebook`.
 
 **Response `200`**
 ```json
 {
-  "platform": "instagram",
-  "username": "@instagram",
+  "platform": "facebook",
+  "username": "Your Page",
   "data_source": "mock",
   "stats": {
-    "posts": "7987",
-    "followers": "686M",
-    "following": "161"
+    "page likes": "5,812",
+    "followers": "6.1K",
+    "posts": "342"
+  },
+  "stat_trends": {
+    "followers": "+2.8%"
   },
   "sections": [
     {
-      "title": "General",
+      "title": "Reach & Impressions",
       "items": [
-        { "label": "Page Viewers", "value": "12.4K" }
+        { "label": "Unique Reach (28d)", "value": "14.2K" }
       ]
     }
   ]
 }
 ```
 
+`data_source` is `"live"` when `ANALYTICS_MODE=live` and the user has a connected Facebook Page; otherwise `"mock"`.
+
 ---
 
-## Recommendations (Phase 2)
+## Recommendations
 
-### `POST /api/recommendations`
+### `POST /api/recommendations` (protected)
 
 **Request**
 ```json
 {
-  "platform": "instagram",
-  "question": "How do I grow my account?"
+  "platform": "facebook",
+  "question": "How do I grow my page?"
 }
 ```
 
@@ -104,7 +120,7 @@ Create an Analytico account.
 
 ## Reports (Phase 2)
 
-### `POST /api/reports/generate`
+### `POST /api/reports/generate` (protected)
 
 **Request:** arbitrary analytics payload
 

@@ -57,9 +57,12 @@ def verify_email(token):
     if not user:
         return jsonify({"message": "Invalid or expired verification link"}), 400
 
-    expires_str = user.get("verification_token_expires")
-    if expires_str:
-        expires = datetime.fromisoformat(expires_str)
+    expires_val = user.get("verification_token_expires")
+    if expires_val:
+        # SQLite stores ISO strings; psycopg2 returns datetime objects
+        expires = expires_val if isinstance(expires_val, datetime) else datetime.fromisoformat(expires_val)
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
         if datetime.now(timezone.utc) > expires:
             return jsonify({"message": "Verification link has expired. Please sign up again."}), 400
 

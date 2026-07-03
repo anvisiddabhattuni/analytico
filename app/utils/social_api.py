@@ -1,46 +1,6 @@
 import os
 
 MOCK_ANALYTICS = {
-    "instagram": {
-        "platform": "instagram",
-        "username": "@demo_creator",
-        "data_source": "mock",
-        "stats": {
-            "posts": "247",
-            "followers": "12.4K",
-            "following": "521",
-        },
-        "stat_trends": {
-            "followers": "+8.2%",
-            "posts": "+3.1%",
-        },
-        "sections": [
-            {
-                "title": "General",
-                "items": [
-                    {"label": "Profile Views (28d)", "value": "14.2K"},
-                    {"label": "Avg. Shares", "value": "845"},
-                    {"label": "Avg. Saves", "value": "1.2K"},
-                ],
-            },
-            {
-                "title": "Reels",
-                "items": [
-                    {"label": "Avg. Views", "value": "45.2K"},
-                    {"label": "Avg. Shares", "value": "320"},
-                    {"label": "Avg. Saves", "value": "890"},
-                ],
-            },
-            {
-                "title": "Top Posts",
-                "items": [
-                    {"label": "Reel #12", "value": "48.2K views"},
-                    {"label": "Story #7", "value": "21.1K views"},
-                    {"label": "Post #3", "value": "9.8K likes"},
-                ],
-            },
-        ],
-    },
     "facebook": {
         "platform": "facebook",
         "username": "Your Page",
@@ -85,7 +45,6 @@ MOCK_ANALYTICS = {
 }
 
 PLATFORM_ALIASES = {
-    "instagram": "facebook",
     "facebook": "facebook",
     "fb": "facebook",
 }
@@ -96,14 +55,18 @@ def _analytics_mode():
 
 
 def fetch_social_media_data(platform, username=None):
-    normalized = PLATFORM_ALIASES.get(platform.lower(), platform.lower())
+    normalized = PLATFORM_ALIASES.get(platform.lower(), "facebook")
 
     if _analytics_mode() == "live" and username:
         from app.utils.meta_api import fetch_meta_analytics
-        live_data = fetch_meta_analytics(normalized, username)
+        try:
+            live_data = fetch_meta_analytics(normalized, username)
+        except Exception:
+            # Any Graph API surprise (malformed payload, timeout) falls back to mock
+            live_data = None
         if live_data:
             return live_data
 
-    data = dict(MOCK_ANALYTICS.get(normalized, MOCK_ANALYTICS["instagram"]))
+    data = dict(MOCK_ANALYTICS[normalized])
     data["data_source"] = "mock"
     return data

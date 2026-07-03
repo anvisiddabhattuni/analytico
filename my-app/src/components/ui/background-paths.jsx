@@ -1,7 +1,8 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 function FloatingPaths({ position }) {
+  const reduceMotion = useReducedMotion();
   const paths = Array.from({ length: 28 }, (_, i) => ({
     id: i,
     d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
@@ -28,16 +29,16 @@ function FloatingPaths({ position }) {
           stroke={`rgba(249,115,22,${0.04 + path.id * 0.008})`}
           strokeWidth={path.width}
           initial={{ pathLength: 0.3, opacity: 0.6 }}
-          animate={{
-            pathLength: 1,
-            opacity: [0.3, 0.7, 0.3],
-            pathOffset: [0, 1, 0],
-          }}
-          transition={{
-            duration: 18 + (path.id % 7) * 3,
-            repeat: Infinity,
-            ease: "linear",
-          }}
+          animate={
+            reduceMotion
+              ? { pathLength: 1, opacity: 0.4 }
+              : { pathLength: 1, opacity: [0.3, 0.7, 0.3], pathOffset: [0, 1, 0] }
+          }
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 18 + (path.id % 7) * 3, repeat: Infinity, ease: "linear" }
+          }
         />
       ))}
     </svg>
