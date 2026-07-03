@@ -9,7 +9,14 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app, origins=app.config.get("CORS_ORIGINS", ["http://localhost:3001"]))
+    CORS(
+        app,
+        origins=app.config.get("CORS_ORIGINS", ["http://localhost:3001"]),
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization", "Accept"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        expose_headers=["Content-Type", "Authorization"],
+    )
     JWTManager(app)
 
     from app.models import init_db
