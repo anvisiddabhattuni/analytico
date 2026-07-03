@@ -27,12 +27,10 @@ def register():
     except ValueError:
         return jsonify({"message": "An account with this email already exists"}), 409
 
-    token = secrets.token_urlsafe(32)
-    User.set_verification_token(username, token)
-    send_verification_email(username, token)
+    User.verify_email(username)
 
     return jsonify({
-        "message": "Account created. Check your email to verify your account."
+        "message": "Account created successfully."
     }), 201
 
 
@@ -48,12 +46,6 @@ def login():
     user = User.find_by_username(username)
     if not user or not User.verify_password(user["password"], password):
         return jsonify({"message": "Invalid email or password"}), 401
-
-    if not user.get("email_verified"):
-        return jsonify({
-            "message": "Please verify your email before logging in.",
-            "code": "email_not_verified",
-        }), 403
 
     token = create_access_token(identity=username)
     return jsonify({"access_token": token, "username": username}), 200
