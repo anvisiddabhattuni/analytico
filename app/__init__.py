@@ -1,38 +1,59 @@
 import re
 
-from flask import Flask
-from flask_cors import CORS
+from flask import Flask, request, make_response
 from flask_jwt_extended import JWTManager
 
 from app.config import Config
 
-_VERCEL_PREVIEW = re.compile(r"^https://[a-zA-Z0-9-]+\.vercel\.app$")
+_VERCEL = re.compile(r"^https://[a-zA-Z0-9-]+\.vercel\.app$")
+_LOCALHOST = re.compile(r"^http://localhost:\d+$")
 
 
-def _origin_allowed(allowed_origins):
-    def check(origin):
-        if origin in allowed_origins:
-            return True
-        if _VERCEL_PREVIEW.match(origin or ""):
-            return True
+def _origin_ok(origin, allowed):
+    if not origin:
         return False
-    return check
+    if origin in allowed:
+        return True
+    if _VERCEL.match(origin) or _LOCALHOST.match(origin):
+        return True
+    return False
+
+
+def _cors_headers(origin):
+    return {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+        "Access-Control-Max-Age": "86400",
+    }
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3001"])
-    CORS(
-        app,
-        origins=_origin_allowed(allowed),
-        supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization", "Accept"],
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        expose_headers=["Content-Type", "Authorization"],
-    )
     JWTManager(app)
+
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            origin = request.headers.get("Origin", "")
+            allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3001"])
+            if _origin_ok(origin, allowed):
+                resp = make_response("", 204)
+                for k, v in _cors_headers(origin).items():
+                    resp.headers[k] = v
+                return resp
+
+    @app.after_request
+    def apply_cors(response):
+        origin = request.headers.get("Origin", "")
+        allowed = app.config.get("CORS_ORIGINS", ["http://localhost:3001"])
+        if _origin_ok(origin, allowed):
+            for k, v in _cors_headers(origin).items():
+                response.headers[k] = v
+        return response
 
     from app.models import init_db
     init_db()
