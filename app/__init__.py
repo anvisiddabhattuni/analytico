@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager
 
 from app.config import Config
 
-_VERCEL_PREVIEW = re.compile(r"^https://[a-zA-Z0-9-]+-anvisidda\.vercel\.app$")
+_VERCEL_PREVIEW = re.compile(r"^https://[a-zA-Z0-9-]+\.vercel\.app$")
 
 
 def _origin_allowed(allowed_origins):
