@@ -64,17 +64,20 @@ export default function GrowthBotPage() {
 
   return (
     <Background className="flex min-h-screen flex-col">
-      <header className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-6">
-        <GhostButton onClick={() => navigate(PLATFORM_DASH_PATHS[platform] || "/facebook-dash")}>
+      <header className="mx-auto flex w-full max-w-3xl items-center justify-between gap-2 px-4 py-5 sm:px-6 sm:py-6">
+        <GhostButton
+          onClick={() => navigate(PLATFORM_DASH_PATHS[platform] || "/facebook-dash")}
+          className="shrink-0 whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
+        >
           &larr; Back
         </GhostButton>
-        <div className="flex items-center gap-2">
-          <h1 className="font-display text-lg font-semibold">GrowthBot</h1>
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs uppercase tracking-wide text-white/50">
+        <div className="flex min-w-0 items-center gap-2">
+          <h1 className="truncate font-display text-base font-semibold sm:text-lg">GrowthBot</h1>
+          <span className="shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-xs uppercase tracking-wide text-white/50">
             {PLATFORM_LABELS[platform] || platform}
           </span>
         </div>
-        <div className="w-[88px]" />
+        <div className="w-16 shrink-0 sm:w-[88px]" />
       </header>
 
       <div className="mx-auto flex w-full max-w-3xl min-h-[calc(100vh-14rem)] flex-col gap-4 px-6 pb-44">

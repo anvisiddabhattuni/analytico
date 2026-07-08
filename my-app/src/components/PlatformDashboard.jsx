@@ -124,12 +124,12 @@ export default function PlatformDashboard({ platform }) {
         </GlassCard>
 
         {/* Tab bar */}
-        <div className="glass flex w-fit items-center gap-1 rounded-full p-1.5">
+        <div className="glass flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full p-1.5">
           {TABS.map(({ key, label, Icon }) => (
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium transition sm:gap-2 sm:px-4 sm:text-sm ${
                 activeTab === key ? "bg-accent-gradient text-ink" : "text-white/60 hover:bg-white/10 hover:text-white"
               }`}
             >
