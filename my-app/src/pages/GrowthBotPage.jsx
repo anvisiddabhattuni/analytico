@@ -13,6 +13,13 @@ const PLATFORM_DASH_PATHS = {
   facebook: "/facebook-dash",
 };
 
+const SUGGESTED_PROMPTS = [
+  "How can I improve my engagement rate?",
+  "What should I post next?",
+  "What's my best time to post?",
+  "Why did my reach drop this week?",
+];
+
 export default function GrowthBotPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,9 +30,9 @@ export default function GrowthBotPage() {
   const [typing, setTyping] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, questionOverride) => {
     e.preventDefault();
-    const question = input.trim();
+    const question = (questionOverride ?? input).trim();
     if (!question) return;
 
     if (!isAuthenticated()) {
@@ -70,14 +77,28 @@ export default function GrowthBotPage() {
         <div className="w-[88px]" />
       </header>
 
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-6 pb-44">
+      <div className="mx-auto flex w-full max-w-3xl min-h-[calc(100vh-14rem)] flex-col gap-4 px-6 pb-44">
         {messages.length === 0 && !typing && (
-          <GlassCard className="flex flex-col gap-2 p-6 text-center">
-            <h2 className="font-display text-xl font-semibold">Ask GrowthBot anything</h2>
-            <p className="text-sm text-white/60">
-              Try "How can I improve my engagement rate?" or "What should I post next?"
-            </p>
-          </GlassCard>
+          <div className="flex flex-1 flex-col items-center justify-center gap-6">
+            <GlassCard className="flex w-full flex-col gap-2 p-6 text-center">
+              <h2 className="font-display text-xl font-semibold">Ask GrowthBot anything</h2>
+              <p className="text-sm text-white/60">
+                Get growth advice grounded in your actual Facebook Page analytics.
+              </p>
+            </GlassCard>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {SUGGESTED_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={(e) => handleSubmit(e, prompt)}
+                  className="glass rounded-full px-4 py-2 text-xs font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {messages.map((message, index) =>
