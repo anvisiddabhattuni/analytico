@@ -49,8 +49,26 @@ def init_db():
             ("email_verified", "BOOLEAN DEFAULT FALSE"),
             ("verification_token", "TEXT"),
             ("verification_token_expires", "TIMESTAMPTZ"),
+            ("company_name", "TEXT"),
+            ("objective", "TEXT"),
         ]:
             cur.execute(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col} {defn}")
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS scheduled_posts (
+                id SERIAL PRIMARY KEY,
+                username TEXT NOT NULL,
+                platform TEXT DEFAULT 'facebook',
+                scheduled_date DATE NOT NULL,
+                scheduled_time TEXT,
+                content TEXT NOT NULL,
+                source TEXT DEFAULT 'manual',
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        """)
+        cur.execute(
+            "CREATE INDEX IF NOT EXISTS idx_scheduled_posts_username_date "
+            "ON scheduled_posts (username, scheduled_date)"
+        )
         conn.commit()
         cur.close()
         conn.close()
@@ -72,11 +90,29 @@ def init_db():
             ("email_verified", "INTEGER DEFAULT 0"),
             ("verification_token", "TEXT"),
             ("verification_token_expires", "TEXT"),
+            ("company_name", "TEXT"),
+            ("objective", "TEXT"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE users ADD COLUMN {col} {defn}")
             except sqlite3.OperationalError:
                 pass
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS scheduled_posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                platform TEXT DEFAULT 'facebook',
+                scheduled_date TEXT NOT NULL,
+                scheduled_time TEXT,
+                content TEXT NOT NULL,
+                source TEXT DEFAULT 'manual',
+                created_at TEXT DEFAULT (datetime('now'))
+            )
+        """)
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_scheduled_posts_username_date "
+            "ON scheduled_posts (username, scheduled_date)"
+        )
         conn.commit()
         conn.close()
 
@@ -225,3 +261,147 @@ class User:
     def get_meta_token(username):
         user = User.find_by_username(username)
         return (user or {}).get("meta_access_token")
+
+    # ── Profile (company + objective) ──
+
+    @staticmethod
+    def set_profile(username, company_name, objective):
+        if _use_postgres():
+            User._pg_execute(
+                "UPDATE users SET company_name = %s, objective = %s WHERE username = %s",
+                (company_name, objective, username),
+            )
+        else:
+            conn = _sqlite_conn()
+            conn.execute(
+                "UPDATE users SET company_name = ?, objective = ? WHERE username = ?",
+                (company_name, objective, username),
+            )
+            conn.commit()
+            conn.close()
+
+    @staticmethod
+    def get_profile(username):
+        user = User.find_by_username(username) or {}
+        return {
+            "company_name": user.get("company_name") or "",
+            "objective": user.get("objective") or "",
+        }
+
+
+# ── Scheduled post model ─────────────────────────────────────────────────────
+
+class ScheduledPost:
+
+    @staticmethod
+    def create(username, scheduled_date, scheduled_time, content, platform="facebook", source="manual"):
+        if _use_postgres():
+            conn = _pg_conn()
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO scheduled_posts (username, platform, scheduled_date, scheduled_time, content, source) "
+                "VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
+                (username, platform, scheduled_date, scheduled_time, content, source),
+            )
+            new_id = cur.fetchone()[0]
+            conn.commit()
+            cur.close()
+            conn.close()
+            return new_id
+        else:
+            conn = _sqlite_conn()
+            cur = conn.execute(
+                "INSERT INTO scheduled_posts (username, platform, scheduled_date, scheduled_time, content, source) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (username, platform, scheduled_date, scheduled_time, content, source),
+            )
+            conn.commit()
+            new_id = cur.lastrowid
+            conn.close()
+            return new_id
+
+    @staticmethod
+    def list_for_user(username, start=None, end=None):
+        clauses = ["username = %s" if _use_postgres() else "username = ?"]
+        params = [username]
+        if start:
+            clauses.append("scheduled_date >= %s" if _use_postgres() else "scheduled_date >= ?")
+            params.append(start)
+        if end:
+            clauses.append("scheduled_date <= %s" if _use_postgres() else "scheduled_date <= ?")
+            params.append(end)
+        where = " AND ".join(clauses)
+        sql = (
+            f"SELECT * FROM scheduled_posts WHERE {where} "
+            "ORDER BY scheduled_date ASC, scheduled_time ASC"
+        )
+
+        if _use_postgres():
+            import psycopg2.extras
+            conn = _pg_conn()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cur.execute(sql, tuple(params))
+            rows = [dict(r) for r in cur.fetchall()]
+            cur.close()
+            conn.close()
+            for row in rows:
+                if hasattr(row.get("scheduled_date"), "isoformat"):
+                    row["scheduled_date"] = row["scheduled_date"].isoformat()
+            return rows
+        else:
+            conn = _sqlite_conn()
+            rows = [dict(r) for r in conn.execute(sql, tuple(params)).fetchall()]
+            conn.close()
+            return rows
+
+    @staticmethod
+    def get(post_id, username):
+        if _use_postgres():
+            row = User._pg_fetch_one(
+                "SELECT * FROM scheduled_posts WHERE id = %s AND username = %s",
+                (post_id, username),
+            )
+            if row and hasattr(row.get("scheduled_date"), "isoformat"):
+                row["scheduled_date"] = row["scheduled_date"].isoformat()
+            return row
+        conn = _sqlite_conn()
+        row = conn.execute(
+            "SELECT * FROM scheduled_posts WHERE id = ? AND username = ?",
+            (post_id, username),
+        ).fetchone()
+        conn.close()
+        return dict(row) if row else None
+
+    @staticmethod
+    def update(post_id, username, scheduled_date, scheduled_time, content):
+        if _use_postgres():
+            User._pg_execute(
+                "UPDATE scheduled_posts SET scheduled_date = %s, scheduled_time = %s, content = %s "
+                "WHERE id = %s AND username = %s",
+                (scheduled_date, scheduled_time, content, post_id, username),
+            )
+        else:
+            conn = _sqlite_conn()
+            conn.execute(
+                "UPDATE scheduled_posts SET scheduled_date = ?, scheduled_time = ?, content = ? "
+                "WHERE id = ? AND username = ?",
+                (scheduled_date, scheduled_time, content, post_id, username),
+            )
+            conn.commit()
+            conn.close()
+
+    @staticmethod
+    def delete(post_id, username):
+        if _use_postgres():
+            User._pg_execute(
+                "DELETE FROM scheduled_posts WHERE id = %s AND username = %s",
+                (post_id, username),
+            )
+        else:
+            conn = _sqlite_conn()
+            conn.execute(
+                "DELETE FROM scheduled_posts WHERE id = ? AND username = ?",
+                (post_id, username),
+            )
+            conn.commit()
+            conn.close()

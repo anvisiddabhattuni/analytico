@@ -77,6 +77,8 @@ def create_app():
     from app.routes.recommendations import recommendations_bp
     from app.routes.reports import reports_bp
     from app.routes.meta_auth import meta_auth_bp
+    from app.routes.profile import profile_bp
+    from app.routes.calendar import calendar_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
@@ -84,6 +86,8 @@ def create_app():
     app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
     app.register_blueprint(recommendations_bp, url_prefix="/api/recommendations")
     app.register_blueprint(reports_bp, url_prefix="/api/reports")
+    app.register_blueprint(profile_bp, url_prefix="/api/profile")
+    app.register_blueprint(calendar_bp, url_prefix="/api/calendar")
 
     from app.utils.error_handler import register_error_handlers
     register_error_handlers(app)

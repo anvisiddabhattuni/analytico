@@ -1,4 +1,8 @@
+import calendar
+import json
 import os
+import re
+from datetime import datetime, timedelta
 
 _FALLBACK_RECS = [
     "Post more Reels on Thursdays — highest CTR for your audience.",
@@ -61,3 +65,98 @@ def get_recommendations(input_data):
 
     except Exception:
         return _FALLBACK_RECS
+
+
+_SCOPE_DAYS = {"day": 1, "week": 7}
+
+_FALLBACK_TIMES = ["10:00", "13:00", "17:30"]
+_FALLBACK_IDEAS = [
+    "Behind-the-scenes look at how {company} gets things done.",
+    "Customer spotlight — share a win or testimonial.",
+    "Quick tip related to your industry that your audience can use today.",
+    "Announce or tease something new coming from {company}.",
+    "Repost/highlight your best-performing content from this month.",
+    "Ask your audience a question to spark comments.",
+    "Show the human side of {company} — team or founder story.",
+]
+
+
+def _scope_to_dates(scope, start_date):
+    start = datetime.fromisoformat(start_date).date() if isinstance(start_date, str) else start_date
+    if scope == "month":
+        days_in_month = calendar.monthrange(start.year, start.month)[1]
+        num_days = days_in_month - start.day + 1
+    else:
+        num_days = _SCOPE_DAYS.get(scope, 7)
+    return [start + timedelta(days=i) for i in range(num_days)]
+
+
+def _fallback_schedule(scope, start_date, company_name):
+    company = company_name or "your business"
+    dates = _scope_to_dates(scope, start_date)
+    posts = []
+    for i, d in enumerate(dates):
+        idea = _FALLBACK_IDEAS[i % len(_FALLBACK_IDEAS)].format(company=company)
+        posts.append({
+            "date": d.isoformat(),
+            "time": _FALLBACK_TIMES[i % len(_FALLBACK_TIMES)],
+            "content": idea,
+        })
+    return posts
+
+
+def _extract_json_array(text):
+    match = re.search(r"\[.*\]", text, re.DOTALL)
+    if not match:
+        raise ValueError("No JSON array found in model response")
+    return json.loads(match.group(0))
+
+
+def generate_schedule(scope, start_date, platform="facebook", company_name="", objective=""):
+    dates = _scope_to_dates(scope, start_date)
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return _fallback_schedule(scope, start_date, company_name)
+
+    try:
+        import anthropic
+
+        date_list = ", ".join(d.isoformat() for d in dates)
+        company_line = f"Company/brand: {company_name}\n" if company_name else ""
+        objective_line = f"Their stated objective with this tool: {objective}\n" if objective else ""
+
+        client = anthropic.Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            system=(
+                "You are a social media content planner. Generate a posting schedule for "
+                f"{platform}, one post per date, for exactly these dates: {date_list}.\n"
+                f"{company_line}{objective_line}"
+                "Pick a sensible posting time (HH:MM, 24h) for each date based on typical "
+                f"engagement windows for {platform}. Write a short, specific content idea "
+                "(1-2 sentences) tailored to the company/objective above — not generic advice.\n\n"
+                "Respond with ONLY a JSON array, no prose, no markdown fences, in this exact shape:\n"
+                '[{"date": "YYYY-MM-DD", "time": "HH:MM", "content": "..."}]'
+            ),
+            messages=[{"role": "user", "content": f"Generate the {scope} schedule."}],
+        )
+
+        text = response.content[0].text
+        posts = _extract_json_array(text)
+
+        cleaned = []
+        for post in posts:
+            if not isinstance(post, dict):
+                continue
+            d = post.get("date")
+            t = post.get("time")
+            c = post.get("content")
+            if d and t and c:
+                cleaned.append({"date": d, "time": t, "content": c})
+
+        return cleaned if cleaned else _fallback_schedule(scope, start_date, company_name)
+
+    except Exception:
+        return _fallback_schedule(scope, start_date, company_name)

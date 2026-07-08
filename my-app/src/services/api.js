@@ -91,3 +91,46 @@ export function getRecommendations(platform, question) {
 export function getMetaOAuthUrl() {
   return apiRequest("/api/auth/meta/start");
 }
+
+export function getProfile() {
+  return apiRequest("/api/profile/");
+}
+
+export function updateProfile(companyName, objective) {
+  return apiRequest("/api/profile/", {
+    method: "PUT",
+    body: JSON.stringify({ company_name: companyName, objective }),
+  });
+}
+
+export function getScheduledPosts(start, end) {
+  const params = new URLSearchParams();
+  if (start) params.set("start", start);
+  if (end) params.set("end", end);
+  return apiRequest(`/api/calendar/posts?${params.toString()}`);
+}
+
+export function createScheduledPost({ date, time, content, platform = "facebook", source = "manual" }) {
+  return apiRequest("/api/calendar/posts", {
+    method: "POST",
+    body: JSON.stringify({ date, time, content, platform, source }),
+  });
+}
+
+export function updateScheduledPost(id, { date, time, content }) {
+  return apiRequest(`/api/calendar/posts/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ date, time, content }),
+  });
+}
+
+export function deleteScheduledPost(id) {
+  return apiRequest(`/api/calendar/posts/${id}`, { method: "DELETE" });
+}
+
+export function generateSchedule({ scope, startDate, platform = "facebook" }) {
+  return apiRequest("/api/calendar/generate", {
+    method: "POST",
+    body: JSON.stringify({ scope, start_date: startDate, platform }),
+  });
+}
