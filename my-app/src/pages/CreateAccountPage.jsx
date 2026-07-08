@@ -80,7 +80,18 @@ function CreateAccountPage() {
           </PrimaryButton>
         </form>
 
-        <p className="mt-6 text-center text-sm text-white/50">
+        <p className="mt-4 text-center text-xs text-white/35">
+          By creating an account, you agree to our{" "}
+          <button onClick={() => navigate("/terms")} className="text-white/50 underline hover:text-white/70">
+            Terms
+          </button>{" "}
+          and{" "}
+          <button onClick={() => navigate("/privacy")} className="text-white/50 underline hover:text-white/70">
+            Privacy Policy
+          </button>.
+        </p>
+
+        <p className="mt-4 text-center text-sm text-white/50">
           Already have an account?{" "}
           <button
             onClick={() => navigate("/login-analytics")}

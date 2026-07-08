@@ -13,6 +13,9 @@ const LoginAnalyticsPage = lazy(() => import("./pages/LoginAnalyticsPage"));
 const LogInPage = lazy(() => import("./pages/LogInPage"));
 const LoadingPageFacebook = lazy(() => import("./pages/LoadingPageFacebook"));
 const GrowthBotPage = lazy(() => import("./pages/GrowthBotPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
+const DataDeletionPage = lazy(() => import("./pages/DataDeletionPage"));
 
 function App() {
   return (
@@ -37,6 +40,11 @@ function App() {
 
           {/* GrowthBot */}
           <Route path="/growth-bot" element={<GrowthBotPage />} />
+
+          {/* Legal */}
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/data-deletion" element={<DataDeletionPage />} />
 
           {/* Unknown paths → landing */}
           <Route path="*" element={<Navigate to="/" replace />} />

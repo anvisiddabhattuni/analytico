@@ -409,6 +409,22 @@ export default function SignUpPage() {
           </div>
         </section>
       </FadeUp>
+
+      {/* ── Footer ── */}
+      <footer className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 pb-12 text-xs text-white/35 sm:flex-row sm:justify-between">
+        <span>© {new Date().getFullYear()} Analytico</span>
+        <div className="flex items-center gap-5">
+          <button onClick={() => navigate("/privacy")} className="transition hover:text-white/60">
+            Privacy
+          </button>
+          <button onClick={() => navigate("/terms")} className="transition hover:text-white/60">
+            Terms
+          </button>
+          <button onClick={() => navigate("/data-deletion")} className="transition hover:text-white/60">
+            Data Deletion
+          </button>
+        </div>
+      </footer>
     </Background>
   );
 }
