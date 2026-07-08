@@ -2,6 +2,7 @@ import React from "react";
 import { TrendingUp, TrendingDown, Bot, Sparkles } from "lucide-react";
 import GlassCard from "../ui/GlassCard";
 import { PrimaryButton } from "../ui/Button";
+import { CalendarMiniCard, ObjectiveMiniCard } from "./MiniCards";
 
 function StatCard({ label, value, trend }) {
   const up = trend && !trend.startsWith("-");
@@ -42,7 +43,7 @@ function SectionCard({ section }) {
   );
 }
 
-export default function AnalyticsTab({ data, config, platform, navigate }) {
+export default function AnalyticsTab({ data, config, platform, navigate, onNavigateTab }) {
   const stats = Object.entries(data.stats || {});
   const trends = data.stat_trends || {};
 
@@ -98,6 +99,12 @@ export default function AnalyticsTab({ data, config, platform, navigate }) {
         {(data.sections || []).map((section) => (
           <SectionCard key={section.title} section={section} />
         ))}
+      </div>
+
+      {/* Calendar + Objective previews */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <CalendarMiniCard onExpand={() => onNavigateTab("calendar")} />
+        <ObjectiveMiniCard onExpand={() => onNavigateTab("objective")} />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, LayoutGroup } from "framer-motion";
 import { Globe, BarChart3, Calendar, Target } from "lucide-react";
 import { getAnalytics, isAuthenticated } from "../services/api";
 import Background from "./ui/Background";
@@ -129,11 +130,27 @@ export default function PlatformDashboard({ platform }) {
           ))}
         </div>
 
-        {activeTab === "analytics" && (
-          <AnalyticsTab data={data} config={config} platform={platform} navigate={navigate} />
-        )}
-        {activeTab === "calendar" && <CalendarTab />}
-        {activeTab === "objective" && <ObjectiveTab />}
+        <LayoutGroup>
+          {activeTab === "analytics" && (
+            <AnalyticsTab
+              data={data}
+              config={config}
+              platform={platform}
+              navigate={navigate}
+              onNavigateTab={setActiveTab}
+            />
+          )}
+          {activeTab === "calendar" && (
+            <motion.div layoutId="calendar-panel">
+              <CalendarTab />
+            </motion.div>
+          )}
+          {activeTab === "objective" && (
+            <motion.div layoutId="objective-panel">
+              <ObjectiveTab />
+            </motion.div>
+          )}
+        </LayoutGroup>
 
       </div>
     </Background>
