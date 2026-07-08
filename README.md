@@ -181,7 +181,6 @@ App: `http://localhost:3000`
 
 <div align="center">
 
-Built by **Anvi Siddabhattuni** — frontend lead & product owner — with Ayush and Anvitha
-(frontend) and Jeevika and Simon (backend).
+Built by **Anvi Siddabhattuni** — frontend lead & product owner
 
 </div>
