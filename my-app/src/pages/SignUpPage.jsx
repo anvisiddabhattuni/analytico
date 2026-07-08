@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MoveRight,
@@ -12,7 +12,9 @@ import {
   TrendingDown,
   Globe,
   Bot,
+  Play,
 } from "lucide-react";
+import { guestLogin, setAuth } from "../services/api";
 import { motion, useInView } from "framer-motion";
 import Background from "../components/ui/Background";
 import { ContainerScroll } from "../components/ui/container-scroll-animation";
@@ -219,6 +221,20 @@ function DashboardPreview() {
 
 export default function SignUpPage() {
   const navigate = useNavigate();
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  const handleTryDemo = async () => {
+    if (demoLoading) return;
+    setDemoLoading(true);
+    try {
+      const data = await guestLogin();
+      setAuth(data.access_token, data.username, true);
+      navigate("/facebook-dash");
+    } catch {
+      setDemoLoading(false);
+      navigate("/create-account");
+    }
+  };
 
   return (
     <Background>
@@ -277,6 +293,10 @@ export default function SignUpPage() {
                 Get started
                 <MoveRight className="h-4 w-4" />
               </PrimaryButton>
+              <GhostButton onClick={handleTryDemo} disabled={demoLoading}>
+                <Play className="h-4 w-4 text-orange-400" />
+                {demoLoading ? "Setting up demo…" : "Try the demo"}
+              </GhostButton>
               <GhostButton onClick={() => navigate("/login-analytics")}>
                 I have an account
               </GhostButton>
@@ -401,6 +421,10 @@ export default function SignUpPage() {
                   Create account
                   <ArrowRight className="h-4 w-4" />
                 </PrimaryButton>
+                <GhostButton onClick={handleTryDemo} disabled={demoLoading}>
+                  <Play className="h-4 w-4 text-orange-400" />
+                  {demoLoading ? "Setting up demo…" : "Try the demo"}
+                </GhostButton>
                 <GhostButton onClick={() => navigate("/login-analytics")}>
                   Log in
                 </GhostButton>

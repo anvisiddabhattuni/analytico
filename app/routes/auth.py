@@ -34,6 +34,24 @@ def register():
     }), 201
 
 
+@auth_bp.route("/guest", methods=["POST"])
+def guest_login():
+    """Create a throwaway demo account so visitors can try the product with no signup.
+
+    Each call gets its own account (not a shared demo user) so concurrent guests
+    don't see each other's calendar entries or objective. The @demo.analytico.local
+    domain marks these as disposable if we ever need to clean them up.
+    """
+    username = f"guest-{secrets.token_hex(8)}@demo.analytico.local"
+    password = secrets.token_urlsafe(24)
+
+    User.create_user(username, password)
+    User.verify_email(username)
+
+    token = create_access_token(identity=username)
+    return jsonify({"access_token": token, "username": username, "is_guest": True}), 201
+
+
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json() or {}

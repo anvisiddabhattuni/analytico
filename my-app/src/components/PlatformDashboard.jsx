@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, LayoutGroup } from "framer-motion";
 import { Globe, BarChart3, Calendar, Target } from "lucide-react";
-import { getAnalytics, isAuthenticated } from "../services/api";
+import { getAnalytics, isAuthenticated, isGuest, clearAuth } from "../services/api";
 import Background from "./ui/Background";
 import GlassCard from "./ui/GlassCard";
 import { PrimaryButton, GhostButton } from "./ui/Button";
@@ -108,9 +108,18 @@ export default function PlatformDashboard({ platform }) {
                 </div>
               </div>
             </div>
-            <GhostButton onClick={() => navigate("/login")} className="self-start sm:self-auto">
-              Switch account
-            </GhostButton>
+            {isGuest() ? (
+              <GhostButton
+                onClick={() => { clearAuth(); navigate("/create-account"); }}
+                className="self-start sm:self-auto"
+              >
+                Create free account
+              </GhostButton>
+            ) : (
+              <GhostButton onClick={() => navigate("/login")} className="self-start sm:self-auto">
+                Switch account
+              </GhostButton>
+            )}
           </div>
         </GlassCard>
 

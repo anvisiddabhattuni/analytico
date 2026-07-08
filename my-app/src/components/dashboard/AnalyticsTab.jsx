@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, Bot, Sparkles } from "lucide-react";
 import GlassCard from "../ui/GlassCard";
 import { PrimaryButton } from "../ui/Button";
 import { CalendarMiniCard, ObjectiveMiniCard } from "./MiniCards";
+import { isGuest, clearAuth } from "../../services/api";
 
 function StatCard({ label, value, trend }) {
   const up = trend && !trend.startsWith("-");
@@ -51,10 +52,25 @@ export default function AnalyticsTab({ data, config, platform, navigate, onNavig
     <div className="flex flex-col gap-5">
       {/* Demo data notice */}
       {data.data_source === "mock" && (
-        <div className="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-xs text-white/40">
-          <span className="font-semibold text-white/60">Showing demo data.</span>{" "}
-          Connect a Facebook Page to see your real analytics.
-        </div>
+        isGuest() ? (
+          <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 px-4 py-3 sm:flex-row sm:items-center">
+            <p className="text-xs text-white/50">
+              <span className="font-semibold text-white/75">You're exploring the demo.</span>{" "}
+              Everything works — try the calendar, GrowthBot, and AI planning with sample data.
+            </p>
+            <button
+              onClick={() => { clearAuth(); navigate("/create-account"); }}
+              className="shrink-0 rounded-full bg-accent-gradient px-4 py-1.5 text-xs font-semibold text-ink transition hover:brightness-110"
+            >
+              Create free account
+            </button>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-xs text-white/40">
+            <span className="font-semibold text-white/60">Showing demo data.</span>{" "}
+            Connect a Facebook Page to see your real analytics.
+          </div>
+        )
       )}
 
       {/* Stats grid */}

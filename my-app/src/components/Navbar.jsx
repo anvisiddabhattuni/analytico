@@ -1,12 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe } from "lucide-react";
-import { clearAuth, getUsername } from "../services/api";
+import { clearAuth, getUsername, isGuest } from "../services/api";
 import { AnalyticoBadge, AnalyticoWordmark } from "./ui/AnalyticoBadge";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const username = getUsername();
+  const guest = isGuest();
+  const username = guest ? "Guest" : getUsername();
 
   return (
     <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-5">
@@ -26,10 +27,10 @@ export default function Navbar() {
       <div className="flex items-center gap-3">
         {username && <span className="hidden text-sm text-white/60 sm:block">{username}</span>}
         <button
-          onClick={() => { clearAuth(); navigate("/login-analytics"); }}
+          onClick={() => { clearAuth(); navigate(guest ? "/" : "/login-analytics"); }}
           className="glass rounded-full px-4 py-2 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
         >
-          Log out
+          {guest ? "Exit demo" : "Log out"}
         </button>
       </div>
     </header>

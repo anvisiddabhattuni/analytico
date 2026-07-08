@@ -2,6 +2,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
 const TOKEN_KEY = "analytico_token";
 const USERNAME_KEY = "analytico_username";
+const GUEST_KEY = "analytico_is_guest";
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -11,14 +12,24 @@ export function getUsername() {
   return localStorage.getItem(USERNAME_KEY);
 }
 
-export function setAuth(token, username) {
+export function setAuth(token, username, isGuest = false) {
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(USERNAME_KEY, username);
+  if (isGuest) {
+    localStorage.setItem(GUEST_KEY, "1");
+  } else {
+    localStorage.removeItem(GUEST_KEY);
+  }
+}
+
+export function isGuest() {
+  return localStorage.getItem(GUEST_KEY) === "1";
 }
 
 export function clearAuth() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USERNAME_KEY);
+  localStorage.removeItem(GUEST_KEY);
 }
 
 export function isAuthenticated() {
@@ -64,6 +75,10 @@ export function login(email, password) {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
+}
+
+export function guestLogin() {
+  return apiRequest("/api/auth/guest", { method: "POST" });
 }
 
 export function verifyEmail(token) {
