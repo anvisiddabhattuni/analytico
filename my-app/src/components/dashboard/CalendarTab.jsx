@@ -230,37 +230,6 @@ export default function CalendarTab() {
         </div>
       </div>
 
-      {/* Month grid */}
-      <GlassCard className="p-4 sm:p-5">
-        <div className="grid grid-cols-7 gap-1.5 text-center text-xs font-medium uppercase tracking-widest text-white/35">
-          {WEEKDAYS.map((d) => <div key={d} className="py-2">{d}</div>)}
-        </div>
-        <div className="grid grid-cols-7 gap-1.5">
-          {grid.map((date, i) => {
-            if (!date) return <div key={`blank-${i}`} className="aspect-square" />;
-            const iso = toISODate(date);
-            const dayPosts = postsByDate[iso] || [];
-            const isSelected = iso === selectedDate;
-            const isToday = iso === toISODate(today);
-            return (
-              <button
-                key={iso}
-                onClick={() => selectDay(date)}
-                className={`flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl text-sm transition
-                  ${isSelected ? "bg-accent-gradient text-ink font-semibold" : "hover:bg-white/8"}
-                  ${!isSelected && isToday ? "ring-1 ring-orange-400/50" : ""}
-                `}
-              >
-                <span>{date.getDate()}</span>
-                {dayPosts.length > 0 && (
-                  <span className={`h-1.5 w-1.5 rounded-full ${isSelected ? "bg-ink" : "bg-orange-400"}`} />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </GlassCard>
-
       {/* AI generate panel */}
       {showAiPanel && (
         <GlassCard className="flex flex-col gap-4 p-5">
@@ -373,6 +342,37 @@ export default function CalendarTab() {
           </form>
         </GlassCard>
       )}
+
+      {/* Month grid */}
+      <GlassCard className="p-4 sm:p-5">
+        <div className="grid grid-cols-7 gap-1.5 text-center text-xs font-medium uppercase tracking-widest text-white/35">
+          {WEEKDAYS.map((d) => <div key={d} className="py-2">{d}</div>)}
+        </div>
+        <div className="grid grid-cols-7 gap-1.5">
+          {grid.map((date, i) => {
+            if (!date) return <div key={`blank-${i}`} className="h-12 sm:h-14" />;
+            const iso = toISODate(date);
+            const dayPosts = postsByDate[iso] || [];
+            const isSelected = iso === selectedDate;
+            const isToday = iso === toISODate(today);
+            return (
+              <button
+                key={iso}
+                onClick={() => selectDay(date)}
+                className={`flex h-12 flex-col items-center justify-center gap-0.5 rounded-2xl text-sm transition sm:h-14
+                  ${isSelected ? "bg-accent-gradient text-ink font-semibold" : "hover:bg-white/8"}
+                  ${!isSelected && isToday ? "ring-1 ring-orange-400/50" : ""}
+                `}
+              >
+                <span>{date.getDate()}</span>
+                {dayPosts.length > 0 && (
+                  <span className={`h-1.5 w-1.5 rounded-full ${isSelected ? "bg-ink" : "bg-orange-400"}`} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </GlassCard>
 
       {/* Selected day agenda */}
       <GlassCard className="flex flex-col gap-3 p-5">
